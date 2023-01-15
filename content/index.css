@@ -1,0 +1,77 @@
+#desk {
+    padding: 20px 0 18px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-top: solid 1px gray;
+    background-color: #1b1b1b;
+    z-index: 2147483647;
+
+    overflow-x: auto;
+}
+#desk > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#desk .unit {
+    width: 80px;
+    height: 80px;
+    
+    border-radius: 5px;
+
+    text-align: center;
+    color: white;
+}
+#desk .unit:hover {
+    cursor: pointer;
+    background-color: #414141;
+    
+    transition: background-color .2s linear;
+}
+
+#desk .unit img {
+    margin: 0 auto;
+    padding: 5px;
+    margin-bottom: 5px;
+    display: block;
+    width: 40px;
+    height: 40px;
+}
+
+
+#desk #keep {
+    padding: 5px 30px 20px;
+    position: fixed;
+    right: 0;
+    width: 200px;
+
+    background-color: #1b1b1b;
+
+    z-index: 1;
+}
+#desk #keep input {
+    width: 192px;
+    height: 25px;
+}
+#desk #keep button {
+    border: none;
+
+    width: 200px;
+    height: 30px;
+    background-color: #292929;
+}
+#desk #keep button:hover {
+    color: white;
+    background-color: #5a5a5a;
+    cursor: pointer;
+
+    transition: background-color .2s linear, color .2s linear;
+}
