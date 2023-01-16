@@ -80,8 +80,9 @@ class Unit {
             let keep = Keep.get().value;
             let link = config.link;
             if (keep && (keep !== '') && (config.linkWithParameter !== ''))
-                link = config.linkWithParameter.replace(/<keep>/, keep)
+                link = config.linkWithParameter.replace(/<keep>/g, keep)
 
+            console.log(link)//
             chrome.runtime.sendMessage({
                 task: 'open website',
                 link: link,
