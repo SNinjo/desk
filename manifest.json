@@ -3,7 +3,7 @@
   
     "name": "Desk",
     "version": "1.0.0",
-    "description": "",
+    "description": "Desk is a Chrome Extension that provides enhanced bookmark functionality.",
     "icons": { "128": "/assets/icon.png" },
   
     "permissions": [

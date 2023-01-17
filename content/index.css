@@ -13,6 +13,8 @@
     z-index: 2147483647;
 
     overflow-x: auto;
+
+    font-family: monospace;
 }
 #desk > div {
     display: flex;
@@ -27,8 +29,8 @@
     
     border-radius: 5px;
 
-    text-align: center;
     color: white;
+    text-align: center;
 }
 #desk .unit:hover {
     cursor: pointer;
@@ -48,7 +50,7 @@
 
 
 #desk #keep {
-    padding: 5px 30px 20px;
+    padding: 5px 30px;
     position: fixed;
     right: 0;
     width: 200px;
@@ -58,15 +60,22 @@
     z-index: 1;
 }
 #desk #keep input {
-    width: 192px;
-    height: 25px;
+    padding: 0 10px;
+    width: 200px;
+    height: 27px;
+
+    box-sizing: border-box;
 }
 #desk #keep button {
-    border: none;
-
+    padding: 0;
     width: 200px;
     height: 30px;
-    background-color: #292929;
+
+    color: #dddddd;
+    border: none;
+    background-color: #353535;
+    
+    transition: color .1s linear;
 }
 #desk #keep button:hover {
     color: white;
@@ -74,4 +83,13 @@
     cursor: pointer;
 
     transition: background-color .2s linear, color .2s linear;
+}
+
+
+
+
+/* avoid being affected by external css */
+#desk * {
+    -webkit-box-sizing: unset;
+    box-sizing: unset;
 }

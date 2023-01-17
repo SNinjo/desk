@@ -1,5 +1,13 @@
 chrome.runtime.onMessage.addListener((request) => {
-    if (request.task === 'click icon') Container.reverseOpenState();
+    switch (request.task){
+        case 'click icon':
+            Container.reverseOpenState();
+            break;
+        
+        case 'update keep':
+            Keep.read();
+            break;
+    }
 });
 
 
@@ -76,17 +84,19 @@ class Unit {
         return unit;
     }
     bind(dom, config){
-        const sendTask = () => {
+        const sendTask = async () => {
             let keep = Keep.get().value;
             let link = config.link;
-            if (keep && (keep !== '') && (config.linkWithParameter !== ''))
-                link = config.linkWithParameter.replace(/<keep>/g, keep)
+            let code = await this.getCode(config.code);
+            if (keep && (keep !== '') && (config.linkUsingKeep !== '')){
+                link = config.linkUsingKeep.replace(/<keep>/g, keep);
+                code = (await this.getCode(config.codeUsingKeep)).replace(/<keep>/g, keep);
+            }
 
-            console.log(link)//
             chrome.runtime.sendMessage({
                 task: 'open website',
                 link: link,
-                code: config.code,
+                code: code,
             });
         }
 
@@ -103,7 +113,13 @@ class Unit {
     }
 
     toString(key){
-        return `${key.code}${(key.alt)? ` + alt` : ''}${(key.ctrl)? ` + ctrl` : ''}${(key.shirt)? ` + shirt` : ''}`
+        return `${(key.ctrl)? `ctrl + ` : ''}${(key.shirt)? `shirt + ` : ''}${(key.alt)? `alt + ` : ''}${key.code}`
+    }
+    async getCode(link){
+        if (link === '') return '';
+        
+        return fetch( chrome.extension.getURL(`/unit/codes/${link}`) )
+            .then(response => response.text())
     }
 }
 
@@ -127,28 +143,52 @@ class Keep {
         const copy = () => navigator.clipboard.writeText(Keep.get().value);
         const paste = () => {
             navigator.clipboard.readText()
-                .then(text => Keep.get().value = text)
+                .then(text => Keep.set(text))
+        }
+        const button = document.querySelector('#desk #keep button');
+        const playCopyAnimation = () => {
+            button.style.color = '#6aff65';
+            setTimeout(() => button.style.color = '', 2000);
         }
 
-        document.querySelector('#desk #keep button').addEventListener('click', copy);
+        button.addEventListener('click', () => {
+            copy();
+            playCopyAnimation();
+        });
         window.addEventListener('keydown', (event) => {
-            if ((event.code === 'KeyC') && event.altKey) copy();
-            if ((event.code === 'KeyV') && event.altKey) paste();
+            if ((event.code === 'KeyC') && event.altKey){
+                copy();
+                playCopyAnimation();
+            }
+            if ((event.code === 'KeyV') && event.altKey)
+                paste();
         });
 
 
-        document.querySelector('#desk #keep input').addEventListener('change', Keep.store);
+        document.querySelector('#desk #keep input').addEventListener('change', () => {
+            Keep.store();
+            chrome.runtime.sendMessage({
+                task: 'update keep',
+            });
+        });
         window.addEventListener('keydown', (event) => {
-            if ((event.code === 'KeyG') && event.altKey) Keep.get().value = '';
+            if ((event.code === 'KeyG') && event.altKey) Keep.set('');
         })
     }
 
     static get(){
         return document.querySelector('#desk #keep input');
     }
+    static set(text){
+        Keep.get().value = text;
+        Keep.store();
+        chrome.runtime.sendMessage({
+            task: 'update keep',
+        });
+    }
     static read(){
         chrome.storage.local.get("keep", (result) => {
-            Keep.get().value = result.keep ?? '';
+            Keep.get().value = result.keep;
         });
     }
     static store(){

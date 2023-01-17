@@ -5,3 +5,4 @@ Desk is a Chrome Extension that provides enhanced bookmark functionality.
 DEMO
 README
 catch exception
+close alert dialog
