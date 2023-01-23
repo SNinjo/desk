@@ -1,0 +1,1 @@
+// some config in webpack.config.js must have an entry

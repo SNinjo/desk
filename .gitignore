@@ -1,1 +1,6 @@
-/unit/
+/node_modules/
+/build/
+package-lock.json
+
+/public/unit/
+/unit (*)/
