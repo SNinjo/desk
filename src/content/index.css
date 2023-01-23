@@ -1,5 +1,0 @@
-/* avoid being affected by external css */
-#desk * {
-    -webkit-box-sizing: unset;
-    box-sizing: unset;
-}

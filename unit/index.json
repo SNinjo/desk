@@ -1,0 +1,58 @@
+[
+    {
+        "name": "CNN",
+        "icon": "cnn.png",
+        "key": {
+            "code": "F1",
+            "alt": false,
+            "ctrl": false,
+            "shift": false
+        },
+        "link": "https://www.youtube.com/@CNN",
+        "code": "",
+        "linkUsingKeep": "https://www.youtube.com/@CNN/videos",
+        "codeUsingKeep": "youtube.js"
+    },
+    {
+        "name": "SED",
+        "icon": "SmarterEveryDay.jpg",
+        "key": {
+            "code": "F2",
+            "alt": false,
+            "ctrl": false,
+            "shift": false
+        },
+        "link": "https://www.youtube.com/@smartereveryday",
+        "code": "",
+        "linkUsingKeep": "https://www.youtube.com/@smartereveryday/videos",
+        "codeUsingKeep": "youtube.js"
+    },
+    {
+        "name": "Gundam",
+        "icon": "gundamInfo.jpg",
+        "key": {
+            "code": "F3",
+            "alt": false,
+            "ctrl": false,
+            "shift": false
+        },
+        "link": "https://www.youtube.com/@GundamInfo",
+        "code": "",
+        "linkUsingKeep": "https://www.youtube.com/@GundamInfo/videos",
+        "codeUsingKeep": "youtube.js"
+    },
+    {
+        "name": "MWitch",
+        "icon": "MercuryWitch.jpg",
+        "key": {
+            "code": "F4",
+            "alt": false,
+            "ctrl": false,
+            "shift": false
+        },
+        "link": "https://www.youtube.com/playlist?list=PLJV1h9xQ7Hx_jXtO1GrrS0to_ojc672HG",
+        "code": "",
+        "linkUsingKeep": "https://www.youtube.com/playlist?list=PLJV1h9xQ7Hx_jXtO1GrrS0to_ojc672HG",
+        "codeUsingKeep": "mercuryWitch.js"
+    }
+]

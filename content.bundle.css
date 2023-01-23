@@ -1,0 +1,8 @@
+.index__div___KqVjY{width:80px;height:80px;border-radius:5px;color:#fff;text-align:center}.index__div___KqVjY:hover{cursor:pointer;background-color:#414141;transition:background-color .2s linear}.index__div___KqVjY img{margin:0 auto;padding:5px;margin-bottom:5px;display:block;width:40px;height:40px}
+.index__div___QJ0dk{padding:5px 30px;position:fixed;right:0;width:200px;background-color:#1b1b1b;z-index:1}.index__div___QJ0dk input{padding:0 10px;width:200px;height:27px;box-sizing:border-box !important}.index__div___QJ0dk button{padding:0;width:200px;height:30px;color:#ddd;border:none;background-color:#353535;transition:color .1s linear}.index__div___QJ0dk button:hover{color:#fff;background-color:#5a5a5a;cursor:pointer;transition:background-color .2s linear,color .2s linear}
+.index__div___xPwOr{padding:20px 0 18px 0;position:fixed;bottom:0;width:100vw;display:flex;justify-content:center;align-items:center;border-top:solid 1px gray;background-color:#1b1b1b;z-index:2147483647;overflow-x:auto;font-family:monospace}.index__div___xPwOr>div{display:flex;justify-content:center;align-items:center}
+/* avoid being affected by external css */
+#desk * {
+    -webkit-box-sizing: unset;
+    box-sizing: unset;
+}

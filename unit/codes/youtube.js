@@ -1,0 +1,1 @@
+let intervalId=setInterval((()=>{let e=document.querySelector("#primary #content #thumbnail");e&&(e.click(),clearInterval(intervalId))}),500);
