@@ -1,0 +1,44 @@
+[
+    {
+        "name": "Amazon",
+        "icon": "amazon.png",
+        "key": {
+            "code": "F1",
+            "alt": false,
+            "ctrl": false,
+            "shift": false
+        },
+        "link": "https://www.amazon.sg/",
+        "code": "",
+        "linkUsingKeep": "https://www.amazon.sg/s?k=<keep>",
+        "codeUsingKeep": ""
+    },
+    {
+        "name": "Shopee",
+        "icon": "shopee.png",
+        "key": {
+            "code": "F2",
+            "alt": false,
+            "ctrl": false,
+            "shift": false
+        },
+        "link": "https://shopee.sg/",
+        "code": "",
+        "linkUsingKeep": "https://shopee.sg/search?keyword=<keep>",
+        "codeUsingKeep": ""
+    },
+    {
+        "name": "Biggo",
+        "icon": "biggo.png",
+        "key": {
+            "code": "F3",
+            "alt": false,
+            "ctrl": false,
+            "shift": false
+        },
+        "link": "https://biggo.sg/",
+        "code": "",
+        "linkUsingKeep": "https://biggo.sg/s/?q=<keep>",
+        "codeUsingKeep": ""
+    }
+]
