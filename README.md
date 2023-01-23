@@ -14,6 +14,8 @@
 </p>
 
 <hr/>
+Desk is a Chrome Extension that provides enhanced bookmark functionality.
+<br/><br/>
 This tool can simplify a lot of daily routine on the website and also provides an API to customize your own units, all (bookmark) buttons is named "unit".
 <br/>
 It can automatically do something after opening a website and provide a global variable that named "keep" to easily change a property in URL or variable in the code.
