@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="100" src="https://github.com/SNinjo/desk/blob/main/public/icon.png" alt="Desk logo">
+    <img width="100" src="https://github.com/SNinjo/desk/blob/master/public/icon.png" alt="Desk logo">
 </p>
 <p align="center">
     <span style="color: white; font-size: 30px">Desk</span>
