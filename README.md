@@ -24,6 +24,8 @@ By the way, hope this tool can open any website you want with just one click.
 
 
 ## Examples
+<b>CopyRight</b>: There are some youtube channels or e-commerce stores in example. If it had any problem, please post a question in [issue](https://github.com/SNinjo/desk/issues) and we'll deal with (maybe delete) it right away. We're very sorry about it.
+
 #### Youtube &middot; [download](https://github.com/SNinjo/desk/tree/youtube)
 Follow some youtuber or youtube channel for latest video.
 Keep represents whether to open latest video, fill in "true".
