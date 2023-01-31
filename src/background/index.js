@@ -1,10 +1,9 @@
+const mapCodes = new Map();
 chrome.runtime.onMessage.addListener((request) => {
     switch (request.task){
         case 'open website':
             chrome.tabs.create({ url: request.link }, (tab) => {
-                chrome.tabs.executeScript(tab.id, { 
-                    code: request.code
-                });
+                mapCodes.set(tab.id, request.code);
             });
             break;
             
@@ -19,6 +18,14 @@ chrome.runtime.onMessage.addListener((request) => {
             break;
     }
 });
+chrome.webNavigation.onCompleted.addListener((details) => {
+    if ((details.frameId === 0) && (mapCodes.has(details.tabId))){
+        chrome.tabs.executeScript(details.tabId, {
+            code: mapCodes.get(details.tabId)
+        });
+    }
+});
+
 
 chrome.browserAction.onClicked.addListener((tab) => {
     chrome.tabs.sendMessage(tab.id, {task: 'click icon'})
