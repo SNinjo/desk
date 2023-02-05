@@ -83,6 +83,12 @@ Key (in Unit):
 | ctrl      | boolean | Defines whether to detect pressing ctrl key when the shortcut key is triggered. |
 | shift     | boolean | Defines whether to detect pressing shift key when the shortcut key is triggered |
 
+Method (in /unit/codes/*.js):  
+Provides some useful methods that can be called directly in code.
+| Method | Return Type | Description                                                    |
+| ------ | ----------- | -------------------------------------------------------------- |
+| done() | void        | Declare the extension to stop automatically running this code. |
+
 
 ## License
 Desk is [Apache licensed](./LICENSE).
