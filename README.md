@@ -64,7 +64,7 @@ npm run build
 
 ## API
 Customize your own units, all (bookmark) buttons is called "unit".  
-Unit (in /unit/index.json):
+#### Unit (in /unit/index.json):
 | Attribute     | Type      | Description                                                                                                                   |
 | ------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | name          | string    | Define the unit name displayed under the icon.                                                                                |
@@ -75,7 +75,7 @@ Unit (in /unit/index.json):
 | linkUsingKeep | url       | Specify the target url when using keep.                                                                                       |
 | codeUsingKeep | file path | Specify the code run automatically after opening the url (linkUsingKeep) when using keep. The root directory is /unit/code/ . |
 
-Key (in Unit):
+#### Key (in Unit):
 | Attribute | Type    | Description                                                                     |
 | --------- | ------- | ------------------------------------------------------------------------------- |
 | code      | string  | Define the main shortcut key. This value is same as KeyboardEvent.code.         |
@@ -83,7 +83,7 @@ Key (in Unit):
 | ctrl      | boolean | Defines whether to detect pressing ctrl key when the shortcut key is triggered. |
 | shift     | boolean | Defines whether to detect pressing shift key when the shortcut key is triggered |
 
-Method (in /unit/codes/*.js):  
+#### Method (in /unit/codes/*.js):  
 Provides some useful methods that can be called directly in code.
 | Method | Return Type | Description                                                    |
 | ------ | ----------- | -------------------------------------------------------------- |
