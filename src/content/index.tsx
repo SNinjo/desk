@@ -4,11 +4,9 @@ import App from './app';
 import './index.css';
 
 
-function createRoot(id: string){
-    let rootElement = document.createElement('div');
-    rootElement.setAttribute('id', id);
-    document.body.prepend(rootElement);
+function createRoot(){
+    let rootElement = document.createElement('desk');
+    document.documentElement.prepend(rootElement);
+    return rootElement;
 }
-
-createRoot('desk');
-ReactDOM.render(<App />, document.getElementById('desk'));
+ReactDOM.render(<App />, createRoot());
