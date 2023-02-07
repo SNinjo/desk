@@ -3,3 +3,7 @@ function done(){
         task: 'clear code',
     });
 }
+
+function sleep(ms){
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}

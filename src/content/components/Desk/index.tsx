@@ -37,6 +37,7 @@ const Desk = () => {
                         break;
                 }
             }
+            if (event.altKey && (event.code === 'Space')) setDisplayState(value => !value);
         });
     }, [])
 
