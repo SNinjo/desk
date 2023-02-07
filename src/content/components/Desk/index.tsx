@@ -21,23 +21,15 @@ const Desk = () => {
         });
 
         window.addEventListener('keydown', (event) => {
-            if (event.ctrlKey){
-                switch (event.code){
-                    case 'KeyE':
-                        event.preventDefault();
-                        chrome.runtime.sendMessage({
-                            task: 'open website',
-                            link: 'https://www.google.com',
-                            code: '',
-                        });
-                        break;
-
-                    case 'Space':
-                        setDisplayState(value => !value);
-                        break;
-                }
+            if (event.ctrlKey && (event.code === 'KeyE')){
+                event.preventDefault();
+                chrome.runtime.sendMessage({
+                    task: 'open website',
+                    link: 'https://www.google.com',
+                    code: '',
+                });
             }
-            if (event.altKey && (event.code === 'Space')) setDisplayState(value => !value);
+            if ((event.code === 'Space') && (event.ctrlKey || event.altKey)) setDisplayState(value => !value);
         });
     }, [])
 

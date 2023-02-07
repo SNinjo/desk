@@ -85,9 +85,11 @@ Customize your own units, all (bookmark) buttons is called "unit".
 
 #### Method (in /unit/codes/*.js):  
 Provides some useful methods that can be called directly in code.
-| Method | Return Type | Description                                                    |
-| ------ | ----------- | -------------------------------------------------------------- |
-| done() | void        | Declare the extension to stop automatically running this code. |
+| Method                                | Return Type | Description                                                       |
+| ------------------------------------- | ----------- | ----------------------------------------------------------------- |
+| done()                                | void        | Let the extension to stop automatically running code on this tab. |
+| sleep(ms: number)                     | void        | Wait for the time you set.                                        |
+| until(check: Function, run: Function) | void        | Run code after waiting for something to check.                    |
 
 
 ## License

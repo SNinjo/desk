@@ -88,20 +88,22 @@ const Keep = (props: { keep: string, setKeep: Function }) => {
         <div
             className={style.div}
         >
-            <input
-                ref={refInput}
-                type='text'
-                placeholder='<keep>'
+            <div>
+                <input
+                    ref={refInput}
+                    type='text'
+                    placeholder='<keep>'
 
-                onChange={change}
-            />
-            <button
-                style={cssButton}
+                    onChange={change}
+                />
+                <button
+                    style={cssButton}
 
-                onClick={click}
-            >
-                copy
-            </button>
+                    onClick={click}
+                >
+                    copy
+                </button>
+            </div>
         </div>
     )
 }

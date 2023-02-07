@@ -1,40 +1,48 @@
+@import '../../global.scss';
+
+
 .div {
-    padding: 5px 30px;
     position: fixed;
     right: 0;
-    width: 200px;
+    width: $widthKeep;
+    height: calc(#{$height} - 10px);
+    
+    display: flex;
+    align-items: center;
 
     background-color: #1b1b1b;
 
     z-index: 1;
 
 
-    & input {
-        padding: 0 10px;
-        width: 200px;
-        height: 27px;
-    
-        box-sizing: border-box !important;
-    }
-
-    & button {
-        padding: 0;
-        width: 200px;
-        height: 30px;
-    
-        color: #dddddd;
-        border: none;
-        background-color: #353535;
+    & div {
+        & input {
+            padding: 0 10px;
+            width: 200px;
+            height: 27px;
         
-        transition: color .1s linear;
+            box-sizing: border-box !important;
+        }
 
-
-        &:hover {
-            color: white;
-            background-color: #5a5a5a;
-            cursor: pointer;
+        & button {
+            padding: 0;
+            width: 200px;
+            height: 30px;
         
-            transition: background-color .2s linear, color .2s linear;
+            color: #dddddd;
+            border: none;
+            background-color: #353535;
+            
+            transition: color .1s linear;
+
+
+            &:hover {
+                color: white;
+                background-color: #5a5a5a;
+                cursor: pointer;
+            
+                transition: background-color .2s linear, color .2s linear;
+            }
         }
     }
 }

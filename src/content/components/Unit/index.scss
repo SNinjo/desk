@@ -6,13 +6,19 @@
 
     color: white;
     text-align: center;
+    
+    // 不因超出容器而壓縮子元素
+    flex-shrink: 0;
+    
+    transition: background-color .2s linear;
 
 
     &:hover {
         cursor: pointer;
         background-color: #414141;
-        
-        transition: background-color .2s linear;
+    }
+    &:active {
+        background-color: #5f5f5f;
     }
 
     & img {
