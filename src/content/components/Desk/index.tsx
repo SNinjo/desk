@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 
 import Unit, { iUnit } from '../Unit';
 import Keep from '../Keep';
@@ -11,11 +11,26 @@ function fetchAllUnits(): Promise<Array<iUnit>> {
         .then(response => response.json())
 }
 
+function read(setDisplayState: Function): void {
+    chrome.storage.local.get("displayState", (result) => {
+        setDisplayState(result.displayState ?? true);
+    });
+}
+function store(displayState: boolean): void {
+    chrome.storage.local.set({ "displayState": displayState });
+}
+
 const Desk = () => {
-    const [isDisplayed, setDisplayState] = useState(true);
-    const [keep, setKeep] = useState('');
+    const isFirstRender = useRef(true);
+    const [isDisplayed, setDisplayState] = useState(false);
+    useEffect(() => {
+        if (isFirstRender.current) isFirstRender.current = false;
+        else store(isDisplayed);
+    }, [isDisplayed]);
 
     useEffect(() => {
+        read(setDisplayState);
+
         chrome.runtime.onMessage.addListener((request) => {
             if (request.task === 'click icon') setDisplayState(value => !value);
         });
@@ -33,6 +48,7 @@ const Desk = () => {
         });
     }, [])
 
+    const [keep, setKeep] = useState('');
     const [arrUnits, setUnits] = useState<Array<JSX.Element>>([]);
     useEffect(() => {
         fetchAllUnits()
