@@ -19,14 +19,7 @@
 
 
     & > div {
-        margin-top: 8px;
-        width: calc(100% - (#{$widthKeep} * 2) - 50px);
-        
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        box-sizing: border-box;
+        width: calc(100% - (  (#{$widthKeep} + (#{$paddingHorizontalKeep} * 2)) * 2  ) - 20px);
         overflow-x: scroll;
 
 
@@ -43,6 +36,17 @@
             border: solid 1px #818181;
             background-color: #666666;
             box-shadow: none;
+        }
+
+        & > div {
+            margin-top: 8px;
+            width: fit-content;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+    
+            box-sizing: border-box;
         }
     }
 }

@@ -78,17 +78,19 @@ const Desk = () => {
             style={css}
         >
             <div>
-                {
-                    (arrUnits.length !== 0)?
-                    <>
-                        <Keep
-                            keep={keep}
-                            setKeep={setKeep}
-                        />
-                        {arrUnits}
-                    </>:
-                    <span>empty...</span>
-                }
+                <div>
+                    {
+                        (arrUnits.length !== 0)?
+                        <>
+                            <Keep
+                                keep={keep}
+                                setKeep={setKeep}
+                            />
+                            {arrUnits}
+                        </>:
+                        <span>empty...</span>
+                    }
+                </div>
             </div>
         </div>
     )
