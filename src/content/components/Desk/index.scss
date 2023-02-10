@@ -1,6 +1,8 @@
 @import '../../global.scss';
 
 
+$widthReservedScroll: 20px;
+
 .div {
     position: fixed;
     bottom: 0;
@@ -19,7 +21,8 @@
 
 
     & > div {
-        width: calc(100% - (  (#{$widthKeep} + (#{$paddingHorizontalKeep} * 2)) * 2  ) - 20px);
+        width: calc(100% - (  (#{$widthKeep + $widthReservedScroll} + (#{$paddingHorizontalKeep} * 2)) * 2  ));
+
         overflow-x: scroll;
 
 
@@ -39,6 +42,7 @@
         }
 
         & > div {
+            margin: 0 auto;
             margin-top: 8px;
             width: fit-content;
             
