@@ -1,6 +1,16 @@
 import injectionCode from './injectionCode.raw.js';
 
+
 const mapCodes = new Map();
+
+let keep = '';
+chrome.storage.local.get("keep", (result) => {
+    keep = result.keep ?? '';
+})
+function injectKeep(keep) {
+    return `const keep = '${keep}';`;
+}
+
 chrome.runtime.onMessage.addListener((request, sender) => {
     switch (request.task){
         case 'open website':
@@ -10,6 +20,7 @@ chrome.runtime.onMessage.addListener((request, sender) => {
             break;
             
         case 'update keep':
+            keep = request.keep;
             chrome.tabs.query({}, (tabs) => {
                 tabs.forEach(tab => {
                     chrome.tabs.sendMessage(tab.id, {
@@ -28,7 +39,7 @@ chrome.runtime.onMessage.addListener((request, sender) => {
 chrome.webNavigation.onCompleted.addListener((details) => {
     if ((details.frameId === 0) && (mapCodes.has(details.tabId))){
         chrome.tabs.executeScript(details.tabId, {
-            code: `${mapCodes.get(details.tabId)}\n${injectionCode}`
+            code: `${injectionCode}\n${injectKeep(keep)}\n${mapCodes.get(details.tabId)}`
         });
     }
 });

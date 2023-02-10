@@ -1,15 +1,9 @@
-import { CSSProperties, useEffect, useRef, useState } from 'react';
+import { CSSProperties, FC, useEffect, useRef, useState } from 'react';
 
-import Unit, { iUnit } from '../Unit';
 import Keep from '../Keep';
+import Units from '../Units';
 import style from './index.scss';
 
-
-function fetchAllUnits(): Promise<Array<iUnit>> {
-    let link = chrome.extension.getURL('/unit/index.json');
-    return fetch(link)
-        .then(response => response.json())
-}
 
 function read(setDisplayState: Function): void {
     chrome.storage.local.get("displayState", (result) => {
@@ -20,7 +14,10 @@ function store(displayState: boolean): void {
     chrome.storage.local.set({ "displayState": displayState });
 }
 
-const Desk = () => {
+const Desk: FC = () => {
+    const [keep, setKeep] = useState('');
+
+
     const isFirstRender = useRef(true);
     const [isDisplayed, setDisplayState] = useState(false);
     useEffect(() => {
@@ -48,26 +45,6 @@ const Desk = () => {
         });
     }, [])
 
-    const [keep, setKeep] = useState('');
-    const [arrUnits, setUnits] = useState<Array<JSX.Element>>([]);
-    useEffect(() => {
-        fetchAllUnits()
-            .then((data: Array<iUnit>) => {
-                data.forEach((unit, index) => {
-                    setUnits(array => [...array,
-                        <Unit
-                            key={`unit${index}`}
-                            config={unit}
-                            keep={keep}
-                        />
-                    ])
-                })
-            })
-    }, [])
-    // when changing the props of JSX.Element in array, it doesn't render and can't get the latest props value
-    const forceUpdateKeep = () => arrUnits.forEach(unit => unit.props.keep = keep);
-    useEffect(forceUpdateKeep, [keep])
-
 
     const css: CSSProperties = {
         display: (isDisplayed)? '' : 'none',
@@ -77,22 +54,15 @@ const Desk = () => {
             className={style.div}
             style={css}
         >
-            <div>
-                <div>
-                    {
-                        (arrUnits.length !== 0)?
-                        <>
-                            <Keep
-                                keep={keep}
-                                setKeep={setKeep}
-                            />
-                            {arrUnits}
-                        </>:
-                        <span>empty...</span>
-                    }
-                </div>
-            </div>
+            <Keep
+                keep={keep}
+                setKeep={setKeep}
+            />
+            <Units
+                keep={keep}
+            />
         </div>
     )
 }
+
 export default Desk;

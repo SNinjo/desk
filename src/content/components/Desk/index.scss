@@ -1,8 +1,6 @@
 @import '../../global.scss';
 
 
-$widthReservedScroll: 20px;
-
 .div {
     position: fixed;
     bottom: 0;
@@ -18,39 +16,4 @@ $widthReservedScroll: 20px;
     z-index: 2147483647;
 
     font-family: monospace;
-
-
-    & > div {
-        width: calc(100% - (  (#{$widthKeep + $widthReservedScroll} + (#{$paddingHorizontalKeep} * 2)) * 2  ));
-
-        overflow-x: scroll;
-
-
-        &::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-            background: transparent;
-        }
-        &::-webkit-scrollbar-track {
-            background-color: $gray;
-        }
-        &::-webkit-scrollbar-thumb {
-            border-radius: 4px;
-            border: solid 1px #818181;
-            background-color: #666666;
-            box-shadow: none;
-        }
-
-        & > div {
-            margin: 0 auto;
-            margin-top: 8px;
-            width: fit-content;
-            
-            display: flex;
-            justify-content: center;
-            align-items: center;
-    
-            box-sizing: border-box;
-        }
-    }
 }

@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useRef, useState } from 'react';
+import { CSSProperties, FC, useEffect, useRef, useState } from 'react';
 import style from './index.scss';
 
 
@@ -22,11 +22,16 @@ function store(keep: string): void {
     chrome.storage.local.set({ "keep": keep });
     chrome.runtime.sendMessage({
         task: 'update keep',
+        keep: keep
     });
 }
 
 
-const Keep = (props: { keep: string, setKeep: Function }) => {
+interface iProps {
+    keep: string,
+    setKeep: Function,
+}
+const Keep: FC<iProps> = ({ keep, setKeep }) => {
     const [buttonColor, setButtonColor] = useState('');
     const playCopyAnimation = () => {
         setButtonColor('#6aff65');
@@ -38,17 +43,17 @@ const Keep = (props: { keep: string, setKeep: Function }) => {
         if (event.altKey){
             switch (event.code){
                 case 'KeyC':
-                    copy(props.keep);
+                    copy(keep);
                     playCopyAnimation();
                     break;
                 
                 case 'KeyV':
-                    paste(props.setKeep)
+                    paste(setKeep)
                         .then((keep: string) => store(keep))
                     break;
             
                 case 'KeyG':
-                    props.setKeep('');
+                    setKeep('');
                     store('');
                     break;
             }
@@ -57,28 +62,28 @@ const Keep = (props: { keep: string, setKeep: Function }) => {
     useEffect(() => {
         window.addEventListener('keydown', setShortcutKey);
         return () => window.removeEventListener('keydown', setShortcutKey);
-    })
+    }, [keep, setKeep])
 
 
     useEffect(() => {
-        read(props.setKeep);
+        read(setKeep);
         chrome.runtime.onMessage.addListener((request) => {
-            if (request.task === 'update keep') read(props.setKeep);
+            if (request.task === 'update keep') read(setKeep);
         });
     }, [])
     const change: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         let keep = event.target.value;
-        props.setKeep(keep);
+        setKeep(keep);
         store(keep);
     }
     const click: React.MouseEventHandler<HTMLButtonElement> = () => {
-        copy(props.keep);
+        copy(keep);
         playCopyAnimation();
     }
     
     const refInput = useRef<HTMLInputElement>(null);
-    const updateKeepToInput = () => { refInput.current!.value = props.keep };
-    useEffect(updateKeepToInput, [props.keep])
+    const updateKeepToInput = () => { refInput.current!.value = keep };
+    useEffect(updateKeepToInput, [keep])
 
 
     const cssButton: CSSProperties = {

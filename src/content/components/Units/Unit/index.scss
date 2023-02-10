@@ -7,9 +7,6 @@
     color: white;
     text-align: center;
     
-    // 不因超出容器而壓縮子元素
-    flex-shrink: 0;
-    
     transition: background-color .2s linear;
 
 
