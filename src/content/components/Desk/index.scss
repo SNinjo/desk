@@ -16,4 +16,30 @@
     z-index: 2147483647;
 
     font-family: monospace;
+
+
+    & nav {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+
+        display: flex;
+        justify-content: center;
+
+
+        & a {
+            display: block;
+            padding: 5px;
+
+            
+            &:hover {
+                cursor: pointer;
+                background-color: #4b4b4b;
+            }
+
+            & img {
+                width: 25px;
+            }
+        }
+    }
 }

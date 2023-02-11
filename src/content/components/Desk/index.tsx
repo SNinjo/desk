@@ -54,6 +54,26 @@ const Desk: FC = () => {
             className={style.div}
             style={css}
         >
+            <nav>
+                {/* <a
+                    href='https://sninjo.com/'
+                    target='_blank'
+                >
+                    <img
+                        src={chrome.extension.getURL(`/icons/SNinjo.png`)}
+                        alt='SNinjo'
+                    />
+                </a> */}
+                <a
+                    href='https://github.com/SNinjo/desk'
+                    target='_blank'
+                >
+                    <img
+                        src={chrome.extension.getURL(`/icons/desk.png`)}
+                        alt='Desk'
+                    />
+                </a>
+            </nav>
             <Keep
                 keep={keep}
                 setKeep={setKeep}

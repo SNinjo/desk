@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="100" src="https://github.com/SNinjo/desk/blob/master/public/icon.png" alt="Desk logo">
+    <img width="100" src="https://github.com/SNinjo/desk/blob/master/public/icons/desk.png" alt="Desk logo">
 </p>
 <p align="center">
     <span style="color: white; font-size: 30px">Desk</span>
@@ -83,8 +83,12 @@ Customize your own units, all (bookmark) buttons is called "unit".
 | ctrl      | boolean | Defines whether to detect pressing ctrl key when the shortcut key is triggered. |
 | shift     | boolean | Defines whether to detect pressing shift key when the shortcut key is triggered |
 
-#### Method (in /unit/codes/*.js):  
-Provides some useful methods that can be called directly in code.
+#### Constant/ Method (in /unit/codes/*.js):  
+Provides useful constants and methods that can be called directly in code.
+| Constant | Type   | Description                          |
+| -------- | ------ | ------------------------------------ |
+| keep     | string | Get the value of "keep" set on desk. |
+
 | Method                                | Return Type | Description                                                       |
 | ------------------------------------- | ----------- | ----------------------------------------------------------------- |
 | done()                                | void        | Let the extension to stop automatically running code on this tab. |

@@ -18,20 +18,32 @@
 
     & div {
         & input {
-            padding: 0 10px;
-            width: 200px;
-            height: 27px;
-        
             box-sizing: border-box !important;
+            padding: 5px 10px;
+            width: 200px;
+            height: 32px;
+
+            border-radius: 2px;
+            border: solid 1px #b3b3b3;
+            background-color: #353535;
+            outline: none;
+
+            font-size: 15px;
+
+
+            &:focus {
+                border-color: #dddddd;
+            }
         }
 
         & button {
             padding: 0;
             width: 200px;
-            height: 30px;
+            height: 32px;
         
             color: #dddddd;
             border: none;
+            border-radius: 2px;
             background-color: #353535;
             
             transition: color .1s linear;

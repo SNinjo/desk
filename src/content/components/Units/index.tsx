@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 
 import Unit, { iUnit } from './Unit';
 import style from './index.scss';
@@ -34,8 +34,24 @@ const Units: FC<iProps> = ({ keep }) => {
     useEffect(build, [arrUnitConfigs, keep])
 
 
+    const refContainer = useRef<HTMLDivElement>(null);
+    const scrollHorizontalBar: (this: HTMLDivElement, event: WheelEvent) => any = (event: any) => {
+        event.preventDefault();
+        refContainer.current!.scrollBy({
+            left: (event.deltaY * 0.5),
+            behavior: "auto",
+        });
+    }
+    useEffect(() => {
+        let container = refContainer.current!;
+        container.addEventListener('wheel', scrollHorizontalBar, { passive: false });
+        return () => container.removeEventListener('wheel', scrollHorizontalBar);
+    }, [])
+
+
     return (
         <div
+            ref={refContainer}
             className={style.div}
         >
             <div>
