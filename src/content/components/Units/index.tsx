@@ -38,7 +38,7 @@ const Units: FC<iProps> = ({ keep }) => {
     const scrollHorizontalBar: (this: HTMLDivElement, event: WheelEvent) => any = (event: any) => {
         event.preventDefault();
         refContainer.current!.scrollBy({
-            left: (event.deltaY * 0.5),
+            left: ((event.deltaX + event.deltaY) * 0.5),
             behavior: "auto",
         });
     }
