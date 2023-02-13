@@ -2,14 +2,17 @@ import injectionCode from './injectionCode.raw.js';
 
 
 const mapCodes = new Map();
+function injectConstant(name, value) {
+    return `const ${name} = '${value}';`;
+}
+function injectMainCode(code) {
+    return `(async function (){ ${code} })()`;
+}
 
 let keep = '';
 chrome.storage.local.get("keep", (result) => {
     keep = result.keep ?? '';
 })
-function injectKeep(keep) {
-    return `const keep = '${keep}';`;
-}
 
 chrome.runtime.onMessage.addListener((request, sender) => {
     switch (request.task){
@@ -39,7 +42,7 @@ chrome.runtime.onMessage.addListener((request, sender) => {
 chrome.webNavigation.onCompleted.addListener((details) => {
     if ((details.frameId === 0) && (mapCodes.has(details.tabId))){
         chrome.tabs.executeScript(details.tabId, {
-            code: `${injectionCode}\n${injectKeep(keep)}\n${mapCodes.get(details.tabId)}`
+            code: `${injectionCode} \n${injectConstant('keep', keep)} \n${injectMainCode( mapCodes.get(details.tabId) )}`
         });
     }
 });
