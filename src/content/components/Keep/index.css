@@ -1,0 +1,8 @@
+.selecting {
+    box-sizing: border-box !important;
+
+    border: dashed 2px #e57effb0 !important;
+    background-color: #7ea7ffb0 !important;
+
+    cursor: pointer !important;
+}

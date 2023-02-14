@@ -1,5 +1,6 @@
 import { CSSProperties, FC, useEffect, useRef, useState } from 'react';
 import style from './index.scss';
+import './index.css';
 
 
 function copy(text: string): void {
@@ -39,9 +40,54 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
     }
 
 
+    let isSelecting = false;
+    let elementSelected: HTMLElement | null = null;
+    const clearSelectedElement = () => {
+        if (elementSelected) {
+            elementSelected.classList.remove('selecting');
+            elementSelected = null;
+        }
+    }
+    const hoverOnElement: (this: HTMLElement, ev: MouseEvent) => any = (event) => {
+        clearSelectedElement();
+        elementSelected = event.target as HTMLElement;
+        elementSelected.classList.add('selecting');
+    }
+    const clickOnSelectedElement: (this: HTMLElement, ev: MouseEvent) => any = (event) => {
+        if (elementSelected) {
+            event.preventDefault();
+
+            setKeep(elementSelected.innerText);
+            store(elementSelected.innerText);
+
+            clearSelectedElement();
+            document.body.removeEventListener('mouseover', hoverOnElement);
+            document.body.removeEventListener('click', clickOnSelectedElement);
+            isSelecting = false;
+        }
+    }
+
     const setShortcutKey = (event: KeyboardEvent) => {
         if (event.altKey){
             switch (event.code){
+                case 'KeyZ':
+                    setKeep('');
+                    store('');
+                    break;
+                
+                case 'KeyX':
+                    clearSelectedElement();
+                    isSelecting = !isSelecting;
+                    if (isSelecting) {
+                        document.body.addEventListener('mouseover', hoverOnElement);
+                        document.body.addEventListener('click', clickOnSelectedElement);
+                    }
+                    else {
+                        document.body.removeEventListener('mouseover', hoverOnElement);
+                        document.body.removeEventListener('click', clickOnSelectedElement);
+                    }
+                    break;
+
                 case 'KeyC':
                     copy(keep);
                     playCopyAnimation();
@@ -50,11 +96,6 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
                 case 'KeyV':
                     paste(setKeep)
                         .then((keep: string) => store(keep))
-                    break;
-            
-                case 'KeyG':
-                    setKeep('');
-                    store('');
                     break;
             }
         }
@@ -108,6 +149,13 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
                 >
                     copy
                 </button>
+                {/* <button
+                    style={cssButton}
+
+                    onClick={click}
+                >
+                    paste
+                </button> */}
             </div>
         </div>
     )
