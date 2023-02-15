@@ -39,6 +39,14 @@ Keep represents the name of the product you are searching for.
 1. Click or trigger shortcut key on unit to open target website. (When mouse hover over unit, it shows its name and shortcut key.)
 2. Fill in keep and click on unit to open target website with a special variable.
 
+#### Shortcut Key for Keep
+| Shortcut Key | Description                     |
+| ------------ | ------------------------------- |
+| alt + z      | Clear the value of "keep".      |
+| alt + x      | select a tag on html as "keep". |
+| alt + c      | Copy the value of "keep"        |
+| alt + v      | Paste a value to "keep"         |
+
 
 ## Installation
 #### Extension (has already built)
