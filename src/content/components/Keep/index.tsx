@@ -89,6 +89,7 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
                 case 'KeyZ':
                     setKeep('');
                     store('');
+                    setClearButtonClickState(true);
                     break;
                 
                 case 'KeyX':
