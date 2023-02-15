@@ -69,13 +69,17 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
     }, [isSelecting])
 
 
-    const [isCopyButtonClicked, setCopybuttonClickState] = useState(false);
-    const [isPasteButtonClicked, setPastebuttonClickState] = useState(false);
+    const [isClearButtonClicked, setClearButtonClickState] = useState(false);
+    const [isCopyButtonClicked, setCopyButtonClickState] = useState(false);
+    const [isPasteButtonClicked, setPasteButtonClickState] = useState(false);
     useEffect(() => {
-        setTimeout(() => setCopybuttonClickState(false), 2000);
+        setTimeout(() => setClearButtonClickState(false), 2000);
+    }, [isClearButtonClicked])
+    useEffect(() => {
+        setTimeout(() => setCopyButtonClickState(false), 2000);
     }, [isCopyButtonClicked])
     useEffect(() => {
-        setTimeout(() => setPastebuttonClickState(false), 2000);
+        setTimeout(() => setPasteButtonClickState(false), 2000);
     }, [isPasteButtonClicked])
 
 
@@ -93,13 +97,13 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 
                 case 'KeyC':
                     copy(keep);
-                    setCopybuttonClickState(true);
+                    setCopyButtonClickState(true);
                     break;
                 
                 case 'KeyV':
                     paste(setKeep)
                         .then((keep: string) => store(keep));
-                    setPastebuttonClickState(true);
+                    setPasteButtonClickState(true);
                     break;
             }
         }
@@ -141,25 +145,36 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
                 />
                 <section>
                     <button
-                        className={isSelecting? style.clicked : ''}
+                        className={isClearButtonClicked? style.clicked : ''}
+                        title='clear (alt + KeyZ)'
 
-                        onClick={() => setSelectionState(true)}
+                        onClick={() => { setKeep('');store(''); setClearButtonClickState(true); }}
                     >
-                        select
+                        z
+                    </button>
+                    <button
+                        className={isSelecting? style.clicked : ''}
+                        title='select (alt + KeyX)'
+
+                        onClick={() => setSelectionState(value => !value)}
+                    >
+                        x
                     </button>
                     <button
                         className={isCopyButtonClicked? style.clicked : ''}
+                        title='copy (alt + KeyC)'
 
-                        onClick={() => { copy(keep); setCopybuttonClickState(true); }}
+                        onClick={() => { copy(keep); setCopyButtonClickState(true); }}
                     >
-                        copy
+                        c
                     </button>
                     <button
                         className={isPasteButtonClicked? style.clicked : ''}
+                        title='paste (alt + KeyV)'
 
-                        onClick={() => { paste(setKeep); setPastebuttonClickState(true); }}
+                        onClick={() => { paste(setKeep); setPasteButtonClickState(true); }}
                     >
-                        paste
+                        v
                     </button>
                 </section>
             </div>
