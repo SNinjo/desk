@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import style from './index.scss';
 import './index.css';
 
@@ -33,14 +33,7 @@ interface iProps {
     setKeep: Function,
 }
 const Keep: FC<iProps> = ({ keep, setKeep }) => {
-    const [buttonColor, setButtonColor] = useState('');
-    const playCopyAnimation = () => {
-        setButtonColor('#6aff65');
-        setTimeout(() => setButtonColor(''), 2000);
-    }
-
-
-    let isSelecting = false;
+    const [isSelecting, setSelectionState] = useState(false);
     let elementSelected: HTMLElement | null = null;
     const clearSelectedElement = () => {
         if (elementSelected) {
@@ -60,12 +53,31 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
             setKeep(elementSelected.innerText);
             store(elementSelected.innerText);
 
+            setSelectionState(false);
+        }
+    }
+    useEffect(() => {
+        if (isSelecting) {
+            document.body.addEventListener('mouseover', hoverOnElement);
+            document.body.addEventListener('click', clickOnSelectedElement);
+        }
+        return () => {
             clearSelectedElement();
             document.body.removeEventListener('mouseover', hoverOnElement);
             document.body.removeEventListener('click', clickOnSelectedElement);
-            isSelecting = false;
         }
-    }
+    }, [isSelecting])
+
+
+    const [isCopyButtonClicked, setCopybuttonClickState] = useState(false);
+    const [isPasteButtonClicked, setPastebuttonClickState] = useState(false);
+    useEffect(() => {
+        setTimeout(() => setCopybuttonClickState(false), 2000);
+    }, [isCopyButtonClicked])
+    useEffect(() => {
+        setTimeout(() => setPastebuttonClickState(false), 2000);
+    }, [isPasteButtonClicked])
+
 
     const setShortcutKey = (event: KeyboardEvent) => {
         if (event.altKey){
@@ -76,26 +88,18 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
                     break;
                 
                 case 'KeyX':
-                    clearSelectedElement();
-                    isSelecting = !isSelecting;
-                    if (isSelecting) {
-                        document.body.addEventListener('mouseover', hoverOnElement);
-                        document.body.addEventListener('click', clickOnSelectedElement);
-                    }
-                    else {
-                        document.body.removeEventListener('mouseover', hoverOnElement);
-                        document.body.removeEventListener('click', clickOnSelectedElement);
-                    }
+                    setSelectionState(value => !value);
                     break;
 
                 case 'KeyC':
                     copy(keep);
-                    playCopyAnimation();
+                    setCopybuttonClickState(true);
                     break;
                 
                 case 'KeyV':
                     paste(setKeep)
-                        .then((keep: string) => store(keep))
+                        .then((keep: string) => store(keep));
+                    setPastebuttonClickState(true);
                     break;
             }
         }
@@ -117,19 +121,12 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
         setKeep(keep);
         store(keep);
     }
-    const click: React.MouseEventHandler<HTMLButtonElement> = () => {
-        copy(keep);
-        playCopyAnimation();
-    }
     
     const refInput = useRef<HTMLInputElement>(null);
     const updateKeepToInput = () => { refInput.current!.value = keep };
     useEffect(updateKeepToInput, [keep])
 
 
-    const cssButton: CSSProperties = {
-        color: buttonColor,
-    }
     return (
         <div
             className={style.div}
@@ -142,20 +139,29 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 
                     onChange={change}
                 />
-                <button
-                    style={cssButton}
+                <section>
+                    <button
+                        className={isSelecting? style.clicked : ''}
 
-                    onClick={click}
-                >
-                    copy
-                </button>
-                {/* <button
-                    style={cssButton}
+                        onClick={() => setSelectionState(true)}
+                    >
+                        select
+                    </button>
+                    <button
+                        className={isCopyButtonClicked? style.clicked : ''}
 
-                    onClick={click}
-                >
-                    paste
-                </button> */}
+                        onClick={() => { copy(keep); setCopybuttonClickState(true); }}
+                    >
+                        copy
+                    </button>
+                    <button
+                        className={isPasteButtonClicked? style.clicked : ''}
+
+                        onClick={() => { paste(setKeep); setPastebuttonClickState(true); }}
+                    >
+                        paste
+                    </button>
+                </section>
             </div>
         </div>
     )
