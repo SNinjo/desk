@@ -20,10 +20,11 @@ function read(setKeep: Function): void {
     });
 }
 function store(keep: string): void {
-    chrome.storage.local.set({ "keep": keep });
-    chrome.runtime.sendMessage({
-        task: 'update keep',
-        keep: keep
+    chrome.storage.local.set({ "keep": keep }, () => {
+        chrome.runtime.sendMessage({
+            task: 'update keep',
+            keep: keep,
+        });
     });
 }
 

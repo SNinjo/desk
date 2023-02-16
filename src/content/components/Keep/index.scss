@@ -20,6 +20,10 @@ $height: 32px;
 
 
     & div {
+        font-family: Arial, 微軟正黑體;
+        font-size: 15px;
+
+
         & input {
             box-sizing: border-box !important;
             padding: 5px 10px;
@@ -27,11 +31,11 @@ $height: 32px;
             height: $height;
 
             border-radius: 2px;
-            border: solid 1px #b3b3b3;
+            border: solid 1px $gray02;
+            color: white;
             background-color: #353535;
             outline: none;
 
-            font-size: 15px;
 
 
             &:focus {
@@ -48,8 +52,6 @@ $height: 32px;
 
             color: #dddddd;
             
-            font-size: 15px;
-
 
             & button {
                 padding: 0;
@@ -58,7 +60,7 @@ $height: 32px;
 
                 border: none;
                 border-radius: 2px;
-                border: solid 1px #b3b3b3;
+                border: solid 1px $gray02;
                 background-color: #353535;
                 
                 transition: background-color .2s linear, color .2s linear;

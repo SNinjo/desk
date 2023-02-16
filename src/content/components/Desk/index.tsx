@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useEffect, useRef, useState } from 'react';
+import { CSSProperties, FC, useEffect, useState } from 'react';
 
 import Keep from '../Keep';
 import Units from '../Units';
@@ -11,39 +11,45 @@ function read(setDisplayState: Function): void {
     });
 }
 function store(displayState: boolean): void {
-    chrome.storage.local.set({ "displayState": displayState });
+    chrome.storage.local.set({ "displayState": displayState }, () => {
+        chrome.runtime.sendMessage({
+            task: 'update display state',
+            displayState: displayState,
+        });
+    });
 }
+
 
 const Desk: FC = () => {
     const [keep, setKeep] = useState('');
 
-
-    const isFirstRender = useRef(true);
+    
     const [isDisplayed, setDisplayState] = useState(false);
     useEffect(() => {
-        if (isFirstRender.current) isFirstRender.current = false;
-        else store(isDisplayed);
-    }, [isDisplayed]);
-
-    useEffect(() => {
         read(setDisplayState);
-
         chrome.runtime.onMessage.addListener((request) => {
-            if (request.task === 'click icon') setDisplayState(value => !value);
-        });
-
-        window.addEventListener('keydown', (event) => {
-            if (event.ctrlKey && (event.code === 'KeyE')){
-                event.preventDefault();
-                chrome.runtime.sendMessage({
-                    task: 'open website',
-                    link: 'https://www.google.com',
-                    code: '',
-                });
-            }
-            if ((event.code === 'Space') && (event.ctrlKey || event.altKey)) setDisplayState(value => !value);
+            if (request.task === 'update display state') read(setDisplayState);
         });
     }, [])
+
+    const setShortcutKey = (event: KeyboardEvent) => {
+        if (event.ctrlKey && (event.code === 'KeyE')){
+            event.preventDefault();
+            chrome.runtime.sendMessage({
+                task: 'open website',
+                link: 'https://www.google.com',
+                code: '',
+            });
+        }
+        if ((event.code === 'Space') && (event.ctrlKey || event.altKey)) {
+            store(!isDisplayed);
+            setDisplayState(value => !value);
+        }
+    }
+    useEffect(() => {
+        window.addEventListener('keydown', setShortcutKey);
+        return () => window.removeEventListener('keydown', setShortcutKey);
+    }, [isDisplayed])
 
 
     const css: CSSProperties = {

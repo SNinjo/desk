@@ -11,11 +11,12 @@
     justify-content: center;
     align-items: center;
 
-    border-top: solid 1px gray;
-    background-color: $gray;
+    border-top: solid 1px $gray02;
+    background-color: $gray01;
     z-index: 2147483647;
 
     font-family: monospace;
+    font-size: 13px;
 
 
     & nav {
