@@ -1,6 +1,8 @@
 import injectionCode from './injectionCode.raw.js';
 
 
+
+
 function updateIcon(displayState) {
     if (displayState) {
         chrome.browserAction.setIcon({
