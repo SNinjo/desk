@@ -23,7 +23,7 @@ function store(displayState: boolean): void {
 const Desk: FC = () => {
     const [keep, setKeep] = useState('');
 
-    
+
     const [isDisplayed, setDisplayState] = useState(false);
     useEffect(() => {
         read(setDisplayState);
@@ -43,7 +43,7 @@ const Desk: FC = () => {
         }
         if ((event.code === 'Space') && (event.ctrlKey || event.altKey)) {
             store(!isDisplayed);
-            setDisplayState(value => !value);
+            setDisplayState(!isDisplayed);
         }
     }
     useEffect(() => {
