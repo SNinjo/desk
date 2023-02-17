@@ -2,6 +2,10 @@ import Desk from "./components/Desk";
 
 
 const App = () => {
-    return <Desk />
+    return (
+        // <iframe>
+            <Desk />
+        // </iframe>
+    )
 }
 export default App;
