@@ -15,23 +15,8 @@ function updateIcon(displayState) {
         });
     }
 }
-chrome.browserAction.onClicked.addListener(() => {
-    chrome.storage.local.get("displayState", (result) => {
-        let displayState = !(result.displayState ?? true);
-        chrome.storage.local.set({ "displayState": displayState }, () => {
-            chrome.tabs.query({}, (tabs) => {
-                tabs.forEach(tab => {
-                    chrome.tabs.sendMessage(tab.id, {
-                        task: 'update display state'
-                    });
-                });
-            });
-            updateIcon(displayState);
-        });
-    });
-});
-chrome.runtime.onMessage.addListener((request) => {
-    if (request.task === 'update display state') {
+function setDisplayState(displayState) {
+    chrome.storage.local.set({ "displayState": displayState }, () => {
         chrome.tabs.query({}, (tabs) => {
             tabs.forEach(tab => {
                 chrome.tabs.sendMessage(tab.id, {
@@ -39,7 +24,28 @@ chrome.runtime.onMessage.addListener((request) => {
                 });
             });
         });
-        updateIcon(request.displayState);
+        updateIcon(displayState);
+    });
+}
+
+function initDisplayState() {
+    chrome.storage.local.get("displayState", (result) => {
+        setDisplayState(result.displayState ?? true);
+    });
+}
+initDisplayState();
+
+chrome.browserAction.onClicked.addListener(() => {
+    chrome.storage.local.get("displayState", (result) => {
+        setDisplayState(  !(result.displayState ?? true)  );
+    });
+});
+
+chrome.runtime.onMessage.addListener((request) => {
+    if (request.task === 'update display state') {
+        chrome.storage.local.get("displayState", (result) => {
+            setDisplayState(result.displayState);
+        });
     }
 });
 
