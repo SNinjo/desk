@@ -41,7 +41,7 @@ const Desk: FC = () => {
                 code: '',
             });
         }
-        if ((event.code === 'Space') && (event.ctrlKey || event.altKey)) {
+        if (event.ctrlKey && event.altKey) {
             store(!isDisplayed);
             setDisplayState(!isDisplayed);
         }

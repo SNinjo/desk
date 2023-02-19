@@ -60,15 +60,9 @@ function injectMainCode(code) {
     return `(async function (){ ${code} })()`;
 }
 
-let keep = '';
-chrome.storage.local.get("keep", (result) => {
-    keep = result.keep ?? '';
-})
-
 chrome.runtime.onMessage.addListener((request, sender) => {
     switch (request.task){
         case 'update keep':
-            keep = request.keep;
             chrome.tabs.query({}, (tabs) => {
                 tabs.forEach(tab => {
                     chrome.tabs.sendMessage(tab.id, {
@@ -86,8 +80,10 @@ chrome.runtime.onMessage.addListener((request, sender) => {
 });
 chrome.webNavigation.onCompleted.addListener((details) => {
     if ((details.frameId === 0) && (mapCodes.has(details.tabId))){
-        chrome.tabs.executeScript(details.tabId, {
-            code: `${injectionCode} \n${injectConstant('keep', keep)} \n${injectMainCode( mapCodes.get(details.tabId) )}`
+        chrome.storage.local.get("keep", (result) => {
+            chrome.tabs.executeScript(details.tabId, {
+                code: `${injectionCode} \n${injectConstant('keep', result.keep)} \n${injectMainCode( mapCodes.get(details.tabId) )}`
+            });
         });
     }
 });
