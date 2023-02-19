@@ -55,6 +55,7 @@ const Unit: FC<iProps> = ({ config, keep }) => {
     }
 
     const setShortcutKey = (event: KeyboardEvent) => {
+        if (config.key.code) return;
         if (config.key.code !== event.code) return;
         if (config.key.alt && !event.altKey) return;
         if (config.key.ctrl && !event.ctrlKey) return;
