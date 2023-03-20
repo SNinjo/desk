@@ -19,9 +19,15 @@ $widthReservedScroll: 20px;
     }
     &::-webkit-scrollbar-thumb {
         border-radius: 4px;
-        border: solid 1px #818181;
-        background-color: #666666;
+        border: solid 1px #777777;
+        background-color: #535353;
         box-shadow: none;
+
+
+        &:hover {
+            border-color: #818181;
+            background-color: #666666;
+        }
     }
 
     & > div {
