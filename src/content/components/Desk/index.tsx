@@ -68,15 +68,24 @@ const Desk: FC = () => {
         >
             {PreventingFlickeringContentUntilScssIsLoaded}
             <nav>
-                {/* <a
+                <a
                     href='https://sninjo.com/'
                     target='_blank'
                 >
                     <img
                         src={chrome.extension.getURL(`/icons/SNinjo.png`)}
-                        alt='SNinjo'
+                        alt='SNinjo personal website'
                     />
-                </a> */}
+                </a>
+                <a
+                    href='https://blog.sninjo.com/'
+                    target='_blank'
+                >
+                    <img
+                        src={chrome.extension.getURL(`/icons/blog.png`)}
+                        alt='SNinjo blog'
+                    />
+                </a>
                 <a
                     href='https://github.com/SNinjo/desk'
                     target='_blank'
