@@ -114,8 +114,8 @@ const background = {
 	module: {
 		rules: [
 			{
-			  test: /\.raw\.js/,
-			  use: 'raw-loader',
+				test: /\.raw\.js/,
+				use: 'raw-loader',
 			},
 			{
 				test: /\.tsx?$/,
