@@ -1,5 +1,6 @@
-import { CSSProperties, FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
+import { open, close } from '../..';
 import Keep from '../Keep';
 import Units from '../Units';
 import style from './index.scss';
@@ -47,19 +48,25 @@ const Desk: FC = () => {
         }
     }
     useEffect(() => {
+        isDisplayed? open() : close();
         window.addEventListener('keydown', setShortcutKey);
         return () => window.removeEventListener('keydown', setShortcutKey);
     }, [isDisplayed])
 
 
-    const css: CSSProperties = {
-        display: (isDisplayed)? '' : 'none',
-    }
+    const PreventingFlickeringContentUntilScssIsLoaded = (
+        <div
+            style={{
+                width: '1px',
+                height: '120px',
+            }}
+        />
+    )
     return (
         <div
             className={style.div}
-            style={css}
         >
+            {PreventingFlickeringContentUntilScssIsLoaded}
             <nav>
                 {/* <a
                     href='https://sninjo.com/'

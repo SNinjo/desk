@@ -27,5 +27,5 @@
 			"js": ["content.bundle.js"]
 		}
 	],
-	"web_accessible_resources": ["/icons/*", "/unit/*"]
+	"web_accessible_resources": ["/content.bundle.css", "/icons/*", "/unit/*"]
 }

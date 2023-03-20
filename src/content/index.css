@@ -1,5 +1,9 @@
-/* avoid being affected by external css */
-desk * {
-    -webkit-box-sizing: unset;
-    box-sizing: unset;
+iframe#desk {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    height: 120px;
+
+    border: none;
+    z-index: 2147483647;
 }
