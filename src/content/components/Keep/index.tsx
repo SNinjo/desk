@@ -16,7 +16,7 @@ async function paste(setText: Function): Promise<string> {
 
 function read(setKeep: Function): void {
     chrome.storage.local.get("keep", (result) => {
-        setKeep(result.keep ?? '');
+        setKeep(result.keep);
     });
 }
 function store(keep: string): void {

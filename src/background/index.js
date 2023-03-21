@@ -54,11 +54,18 @@ chrome.runtime.onMessage.addListener((request) => {
 
 const mapCodes = new Map();
 function injectConstant(name, value) {
-    return `const ${name} = \`${value}\`;`;
+    return `const ${name} = \`${value.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`;`;
 }
 function injectMainCode(code) {
     return `(async function (){ ${code} })()`;
 }
+
+function initKeep() {
+    chrome.storage.local.get("keep", (result) => {
+        chrome.storage.local.set({ "keep": result.keep ?? '' });
+    });
+}
+initKeep();
 
 chrome.runtime.onMessage.addListener((request, sender) => {
     switch (request.task){
