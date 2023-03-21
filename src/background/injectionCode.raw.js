@@ -4,7 +4,7 @@ function done() {
     });
 }
 
-function open(link) {
+function open(link, code) {
     chrome.runtime.sendMessage({
         task: 'open website',
         link: link,
