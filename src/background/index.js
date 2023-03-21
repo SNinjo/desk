@@ -54,7 +54,7 @@ chrome.runtime.onMessage.addListener((request) => {
 
 const mapCodes = new Map();
 function injectConstant(name, value) {
-    return `const ${name} = '${value}';`;
+    return `const ${name} = \`${value}\`;`;
 }
 function injectMainCode(code) {
     return `(async function (){ ${code} })()`;
@@ -79,10 +79,11 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     }
 });
 chrome.webNavigation.onCompleted.addListener((details) => {
-    if ((details.frameId === 0) && (mapCodes.has(details.tabId))){
+    if ((details.frameId === 0) && (mapCodes.has(details.tabId))) {
+        let { link, code } = mapCodes.get(details.tabId);
         chrome.storage.local.get("keep", (result) => {
             chrome.tabs.executeScript(details.tabId, {
-                code: `${injectionCode} \n${injectConstant('keep', result.keep)} \n${injectMainCode( mapCodes.get(details.tabId) )}`
+                code: `${injectionCode} \n${injectConstant('keep', result.keep)} \n${injectConstant('link', link)} \n${injectConstant('code', code)} \n${injectMainCode(code)}`
             });
         });
     }
@@ -94,7 +95,7 @@ chrome.webNavigation.onCompleted.addListener((details) => {
 chrome.runtime.onMessage.addListener((request) => {
     if (request.task === 'open website') {
         chrome.tabs.create({ url: request.link }, (tab) => {
-            mapCodes.set(tab.id, request.code);
+            mapCodes.set(tab.id, { link: request.link, code: request.code });
         });
     }
 });
