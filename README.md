@@ -40,12 +40,12 @@ Keep represents the name of the product you are searching for.
 2. Fill in keep and click on unit to open target website with a special variable.
 
 #### Shortcut Key for Keep
-| Shortcut Key | Description                     |
-| ------------ | ------------------------------- |
-| alt + z      | Clear the value of "keep".      |
-| alt + x      | select a tag on html as "keep". |
-| alt + c      | Copy the value of "keep"        |
-| alt + v      | Paste a value to "keep"         |
+| Shortcut Key | Description                     				       |
+| ------------ | ----------------------------------------------------- |
+| alt + z      | Clear the value of "keep".      				   	   |
+| alt + x      | Select the inner text of a tag on the html as "keep". |
+| alt + c      | Copy the value of "keep".        				   	   |
+| alt + v      | Paste the value to "keep".        				   	   |
 
 
 ## Installation
@@ -73,35 +73,38 @@ npm run build
 ## API
 Customize your own units, all (bookmark) buttons is called "unit".  
 #### Unit (in /unit/index.json):
-| Attribute     | Type      | Description                                                                                                                   |
-| ------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| name          | string    | Define the unit name displayed under the icon.                                                                                |
-| icon          | file path | Specify the file path of icon. The root directory is /unit/icon/ .                                                            |
-| key           | Key       | Define the shortcut key for clicking it.                                                                                      |
-| link          | url       | Specify the target url when keep isn't used.                                                                                  |
-| code          | file path | Specify the code run automatically after opening the url (link) when keep isn't used. The root directory is /unit/code/ .     |
-| linkUsingKeep | url       | Specify the target url when using keep.                                                                                       |
-| codeUsingKeep | file path | Specify the code run automatically after opening the url (linkUsingKeep) when using keep. The root directory is /unit/code/ . |
+| Attribute     | Type      | Description                                                                                                                    |
+| ------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| name          | string    | Define the unit name displayed under the icon.                                                                                 |
+| icon          | file path | Specify the file path of icon. The root directory is /unit/icon/ .                                                             |
+| key           | Key       | Define the shortcut key for clicking it.                                                                                       |
+| link          | URL       | Specify the target URL when keep isn't used.                                                                                   |
+| code          | file path | Specify the code run automatically after opening the URL (link) when keep isn't used. The root directory is /unit/codes/ .     |
+| linkUsingKeep | URL       | Specify the target URL when using keep.                                                                                        |
+| codeUsingKeep | file path | Specify the code run automatically after opening the URL (linkUsingKeep) when using keep. The root directory is /unit/codes/ . |
 
 #### Key (in Unit):
-| Attribute | Type    | Description                                                                     |
-| --------- | ------- | ------------------------------------------------------------------------------- |
-| code      | string  | Define the main shortcut key. This value is same as KeyboardEvent.code.         |
-| alt       | boolean | Defines whether to detect pressing alt key when the shortcut key is triggered.  |
-| ctrl      | boolean | Defines whether to detect pressing ctrl key when the shortcut key is triggered. |
-| shift     | boolean | Defines whether to detect pressing shift key when the shortcut key is triggered |
+| Attribute | Type    | Description                                                                      |
+| --------- | ------- | -------------------------------------------------------------------------------- |
+| code      | string  | Define the main shortcut key. This value is same as KeyboardEvent.code.          |
+| alt       | boolean | Defines whether to detect pressing alt key when the shortcut key is triggered.   |
+| ctrl      | boolean | Defines whether to detect pressing ctrl key when the shortcut key is triggered.  |
+| shift     | boolean | Defines whether to detect pressing shift key when the shortcut key is triggered. |
 
 #### Constant/ Method (in /unit/codes/*.js):  
 Provides useful constants and methods that can be called directly in code.
-| Constant | Type   | Description                          |
-| -------- | ------ | ------------------------------------ |
-| keep     | string | Get the value of "keep" set on desk. |
+| Constant | Type   | Description                          						  |
+| -------- | ------ | ----------------------------------------------------------- |
+| link     | string | Get the value of "link" or "linkUsingKeep" set on the unit. |
+| code     | string | Get the value of "code" or "codeUsingKeep" set on the unit. |
+| keep     | string | Get the value of "keep" set on desk. 						  |
 
 | Method                                | Return Type | Description                                                       |
 | ------------------------------------- | ----------- | ----------------------------------------------------------------- |
-| done()                                | void        | Let the extension to stop automatically running code on this tab. |
+| done()                                | void        | Let the extension to stop running code automatically on this tab. |
+| open(link: URL, code: string)         | void        | Open the website on a new tab and run the specified code. 	  	  |
 | sleep(ms: number)                     | void        | Wait for the time you set.                                        |
-| until(check: Function, run: Function) | void        | Run code after waiting for something to check.                    |
+| until(check: Function, run: Function) | void        | Run the code after waiting for the check.                         |
 
 
 ## License
