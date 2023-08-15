@@ -8,8 +8,8 @@
     <a href="https://github.com/SNinjo/desk/blob/main/LICENSE">
         <img src="https://img.shields.io/badge/license-Apache-blue" alt="License">
     </a>
-    <a href="https://github.com/SNinjo/desk/releases/tag/v1.0.0">
-        <img src="https://img.shields.io/badge/extension-v1.0.0-blue" alt="Extension">
+    <a href="https://github.com/SNinjo/desk/releases/tag/v1.0.1">
+        <img src="https://img.shields.io/badge/extension-v1.0.1-blue" alt="Extension">
     </a>
 </p>
 

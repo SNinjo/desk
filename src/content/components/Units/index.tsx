@@ -55,7 +55,18 @@ const Units: FC<iProps> = ({ keep }) => {
             className={style.div}
         >
             <div>
-                {  (arrUnits.length !== 0)? <>{arrUnits}</> : <span>Empty...</span>  }
+                {(arrUnits.length !== 0)?
+					<>{arrUnits}</>:
+					<>
+						<span>Empty...</span>
+						<a
+							href='https://github.com/SNinjo/desk#api'
+							target='_blank'
+						>
+							Set your own Unit!
+						</a>
+					</>
+				}
             </div>
         </div>
     )

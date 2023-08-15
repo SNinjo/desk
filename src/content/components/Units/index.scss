@@ -31,6 +31,7 @@ $widthReservedScroll: 20px;
     }
 
     & > div {
+        box-sizing: border-box;
         margin: 0 auto;
         margin-top: 8px;
         width: fit-content;
@@ -39,6 +40,21 @@ $widthReservedScroll: 20px;
         justify-content: center;
         align-items: center;
 
-        box-sizing: border-box;
+
+		& span {
+			color: white;
+		}
+		& a {
+			margin: 10px;
+
+			color: white;
+
+			transition: color .1s linear;
+
+
+			&:hover {
+				color: $gray03;
+			}
+		}
     }
 }
