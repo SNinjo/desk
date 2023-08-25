@@ -19,7 +19,7 @@ export interface iUnit {
 async function fetchCode(link: string): Promise<string> {
     if (link === '') return new Promise(resolve => resolve(''));
     
-    return fetch( chrome.extension.getURL(`/unit/codes/${link}`) )
+    return fetch(  chrome.extension.getURL(`/config/${link}`)  )
         .then(response => response.text())
 }
 
@@ -78,7 +78,7 @@ const Unit: FC<iProps> = ({ config, keep }) => {
             <img
                 title={`${config.name} (${toString(config.key)})`}
                 alt={toString(config.key)}
-                src={chrome.extension.getURL(`/unit/icons/${config.icon}`)}
+                src={chrome.extension.getURL(`/config/${config.icon}`)}
             />
             <span>{config.name}</span>
         </div>

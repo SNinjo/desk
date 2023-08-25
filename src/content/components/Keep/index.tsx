@@ -3,17 +3,6 @@ import style from './index.scss';
 import './index.css';
 
 
-function copy(text: string): void {
-    navigator.clipboard.writeText(text);
-}
-async function paste(setText: Function): Promise<string> {
-    return navigator.clipboard.readText()
-        .then(text => {
-            setText(text)
-            return text;
-        })
-}
-
 function read(setKeep: Function): void {
     chrome.storage.local.get("keep", (result) => {
         setKeep(result.keep);
@@ -34,6 +23,13 @@ interface iProps {
     setKeep: Function,
 }
 const Keep: FC<iProps> = ({ keep, setKeep }) => {
+    const [regexSelecting, setRegexSelecting] = useState(new RegExp('(.*)'));
+    useEffect(() => {
+        fetch(  chrome.extension.getURL('/config/index.json')  )
+            .then(response => response.json())
+            .then(config => setRegexSelecting(new RegExp(config.regexKeepSelectingFromElement)))
+    }, [])
+
     const [isSelecting, setSelectionState] = useState(false);
     let elementSelected: HTMLElement | null = null;
     const clearSelectedElement = () => {
@@ -51,8 +47,10 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
         if (elementSelected) {
             event.preventDefault();
 
-            setKeep(elementSelected.innerText);
-            store(elementSelected.innerText);
+            const parsedText = elementSelected.innerText.match(regexSelecting);
+            const keep = parsedText? parsedText[1] : elementSelected.innerText;
+            setKeep(keep);
+            store(keep);
 
             setSelectionState(false);
         }
@@ -68,6 +66,27 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
             document.body.removeEventListener('click', clickOnSelectedElement);
         }
     }, [isSelecting])
+
+
+    const copy = (text: string): void => {
+        refInput.current!.select();
+        document.execCommand('copy');
+        console.log('copy!!')//
+
+        // if (window.isSecureContext && navigator.clipboard) {
+        //     navigator.clipboard.writeText(text);
+        // } else {
+        //     refInput.current!.select();
+        //     document.execCommand('copy');
+        // }
+    }
+    const paste = async (setText: Function): Promise<string> => {
+        return navigator.clipboard.readText()
+            .then(text => {
+                setText(text)
+                return text;
+            })
+    }
 
 
     const [isClearButtonClicked, setClearButtonClickState] = useState(false);

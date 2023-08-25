@@ -1,5 +1,6 @@
 {
 	"scripts": {
+		"dev": "webpack --mode development --watch --no-devtool",
 		"build": "webpack --mode=production"
 	},
 	"dependencies": {

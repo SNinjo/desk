@@ -52,7 +52,7 @@ chrome.runtime.onMessage.addListener((request) => {
 
 
 
-const mapCodes = new Map();
+const mapCodesInEachTab = new Map();
 function injectConstant(name, value) {
     return `const ${name} = \`${value.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`;`;
 }
@@ -60,34 +60,36 @@ function injectMainCode(code) {
     return `(async function (){ ${code} })()`;
 }
 
-function initKeep() {
+(function initKeep() {
     chrome.storage.local.get("keep", (result) => {
         chrome.storage.local.set({ "keep": result.keep ?? '' });
     });
+})();
+function updateKeepInEachTab() {
+    chrome.tabs.query({}, (tabs) => {
+        tabs.forEach(tab => {
+            chrome.tabs.sendMessage(tab.id, {
+                task: 'update keep'
+            });
+        });
+    });
 }
-initKeep();
 
 chrome.runtime.onMessage.addListener((request, sender) => {
     switch (request.task){
         case 'update keep':
-            chrome.tabs.query({}, (tabs) => {
-                tabs.forEach(tab => {
-                    chrome.tabs.sendMessage(tab.id, {
-                        task: 'update keep'
-                    });
-                });
-            });
+            updateKeepInEachTab();
             break;
 
         case 'clear code':
             let tabId = sender.tab.id;
-            if (mapCodes.has(tabId)) mapCodes.delete(tabId);
+            if (mapCodesInEachTab.has(tabId)) mapCodesInEachTab.delete(tabId);
             break;
     }
 });
 chrome.webNavigation.onCompleted.addListener((details) => {
-    if ((details.frameId === 0) && (mapCodes.has(details.tabId))) {
-        let { link, code } = mapCodes.get(details.tabId);
+    if ((details.frameId === 0) && (mapCodesInEachTab.has(details.tabId))) {
+        let { link, code } = mapCodesInEachTab.get(details.tabId);
         chrome.storage.local.get("keep", (result) => {
             chrome.tabs.executeScript(details.tabId, {
                 code: `${injectionCode} \n${injectConstant('keep', result.keep)} \n${injectConstant('link', link)} \n${injectConstant('code', code)} \n${injectMainCode(code)}`
@@ -102,7 +104,7 @@ chrome.webNavigation.onCompleted.addListener((details) => {
 chrome.runtime.onMessage.addListener((request) => {
     if (request.task === 'open website') {
         chrome.tabs.create({ url: request.link }, (tab) => {
-            mapCodes.set(tab.id, { link: request.link, code: request.code });
+            mapCodesInEachTab.set(tab.id, { link: request.link, code: request.code });
         });
     }
 });

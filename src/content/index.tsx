@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import App from './app';
 import './index.css';
@@ -14,14 +14,14 @@ function applyCSS(iframe: HTMLIFrameElement) {
     link.type = "text/css"; 
     iframe.contentWindow!.document.head.appendChild(link);
 }
-function createRoot() {
+function createIframe() {
     let iframe = document.createElement('iframe');
     document.documentElement.prepend(iframe);
     iframe.setAttribute('id', 'desk');
     applyCSS(iframe);
     return iframe.contentWindow!.document.body;
 }
-ReactDOM.render(<App />, createRoot());
+createRoot(createIframe()).render(<App />);
 
 
 export function open() {
