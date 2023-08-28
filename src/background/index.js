@@ -5,12 +5,12 @@ import injectionCode from './injectionCode.raw.js';
 
 function updateIcon(displayState) {
     if (displayState) {
-        chrome.browserAction.setIcon({
+        chrome.action.setIcon({
             path: 'icons/desk.png'
         });
     }
     else {
-        chrome.browserAction.setIcon({
+        chrome.action.setIcon({
             path: 'icons/desk_closed.png'
         });
     }
@@ -35,7 +35,7 @@ function initDisplayState() {
 }
 initDisplayState();
 
-chrome.browserAction.onClicked.addListener(() => {
+chrome.action.onClicked.addListener(() => {
     chrome.storage.local.get("displayState", (result) => {
         setDisplayState(  !(result.displayState ?? true)  );
     });
@@ -91,9 +91,17 @@ chrome.webNavigation.onCompleted.addListener((details) => {
     if ((details.frameId === 0) && (mapCodesInEachTab.has(details.tabId))) {
         let { link, code } = mapCodesInEachTab.get(details.tabId);
         chrome.storage.local.get("keep", (result) => {
-            chrome.tabs.executeScript(details.tabId, {
-                code: `${injectionCode} \n${injectConstant('keep', result.keep)} \n${injectConstant('link', link)} \n${injectConstant('code', code)} \n${injectMainCode(code)}`
-            });
+			const test = () => {
+				eval('console.log("test")');
+			}
+			console.log('run test')//
+			chrome.scripting.executeScript({
+				target: {  tabId: details.tabId  },
+				func: test,
+			})
+            // chrome.scripting.executeScript(details.tabId, {
+            //     code: `${injectionCode} \n${injectConstant('keep', result.keep)} \n${injectConstant('link', link)} \n${injectConstant('code', code)} \n${injectMainCode(code)}`
+            // });
         });
     }
 });

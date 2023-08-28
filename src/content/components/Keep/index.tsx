@@ -27,7 +27,7 @@ interface iProps {
 const Keep: FC<iProps> = ({ keep, setKeep }) => {
     const [regexSelecting, setRegexSelecting] = useState(new RegExp('(.*)'));
     useEffect(() => {
-        fetch(  chrome.extension.getURL('/config/index.json')  )
+        fetch(  chrome.runtime.getURL('/config/index.json')  )
             .then(response => response.json())
             .then(config => setRegexSelecting(new RegExp(config.regexKeepSelectingFromElement)))
     }, [])

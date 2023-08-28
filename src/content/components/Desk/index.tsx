@@ -73,7 +73,7 @@ const Desk: FC = () => {
                     target='_blank'
                 >
                     <img
-                        src={chrome.extension.getURL(`/icons/SNinjo.png`)}
+                        src={chrome.runtime.getURL(`/icons/SNinjo.png`)}
                         alt='SNinjo personal website'
                     />
                 </a>
@@ -82,7 +82,7 @@ const Desk: FC = () => {
                     target='_blank'
                 >
                     <img
-                        src={chrome.extension.getURL(`/icons/blog.png`)}
+                        src={chrome.runtime.getURL(`/icons/blog.png`)}
                         alt='SNinjo blog'
                     />
                 </a>
@@ -91,7 +91,7 @@ const Desk: FC = () => {
                     target='_blank'
                 >
                     <img
-                        src={chrome.extension.getURL(`/icons/desk.png`)}
+                        src={chrome.runtime.getURL(`/icons/desk.png`)}
                         alt='Desk'
                     />
                 </a>

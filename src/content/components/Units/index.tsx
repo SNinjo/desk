@@ -10,7 +10,7 @@ interface iProps {
 const Units: FC<iProps> = ({ keep }) => {
     const [arrUnitConfigs, setUnitConfigs] = useState<Array<iUnit>>([]);
     const load = () => {
-        fetch(  chrome.extension.getURL('/config/unit.json')  )
+        fetch(  chrome.runtime.getURL('/config/unit.json')  )
             .then(response => response.json())
             .then(data => setUnitConfigs(data))
     }

@@ -1,5 +1,5 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
 
 	"name": "Desk",
 	"version": "1.0.1",
@@ -8,18 +8,33 @@
 
 	"permissions": [
 		"activeTab",
-		"storage",
 		"clipboardRead",
-		"webNavigation",
-		"http://*/",
-		"https://*/"
+		"scripting",
+		"storage",
+		"webNavigation"
 	],
-	"browser_action": {
+	"host_permissions": [
+		"*://*/*"
+	],
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"/content.bundle.css",
+				"/icons/*",
+				"/config/*"
+			],
+			"matches": [
+				"*://*/*"
+			]
+		}
+	],
+
+	"action": {
 		"default_icon": "/icons/desk.png"
 	}, 
-	"background": {  
-		"persistent": false,  
-		"scripts": ["background.bundle.js"]  
+	"background": {
+		"service_worker": "background.bundle.js",
+		"type": "module"
 	},  
 	"content_scripts": [
 		{
@@ -27,6 +42,5 @@
 			"css": ["content.bundle.css"],
 			"js": ["content.bundle.js"]
 		}
-	],
-	"web_accessible_resources": ["/content.bundle.css", "/icons/*", "/config/*"]
+	]
 }

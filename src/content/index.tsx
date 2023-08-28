@@ -1,8 +1,8 @@
 import { createRoot } from 'react-dom/client';
 
-import { getDocumentFromIframe } from './tools/rootIframe';
+import { getAppFromIframe } from './tools/rootIframe';
 import App from './app';
 import './index.css';
 
 
-createRoot(getDocumentFromIframe().body).render(<App />);
+createRoot(getAppFromIframe()).render(<App />);
