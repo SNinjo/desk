@@ -1,4 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
+
+import { getWindowFromIframe, getDocumentFromIframe } from '../../tools/rootIframe';
 import style from './index.scss';
 import './index.css';
 
@@ -38,14 +40,15 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
             elementSelected = null;
         }
     }
-    const hoverOnElement: (this: HTMLElement, ev: MouseEvent) => any = (event) => {
+    const hoverOnElement: (event: MouseEvent) => any = (event) => {
         clearSelectedElement();
         elementSelected = event.target as HTMLElement;
         elementSelected.classList.add('selecting');
     }
-    const clickOnSelectedElement: (this: HTMLElement, ev: MouseEvent) => any = (event) => {
+    const clickOnSelectedElement: (event: MouseEvent) => any = (event) => {
         if (elementSelected) {
             event.preventDefault();
+            event.stopPropagation();
 
             const parsedText = elementSelected.innerText.match(regexSelecting);
             const keep = parsedText? parsedText[1] : elementSelected.innerText;
@@ -53,6 +56,7 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
             store(keep);
 
             setSelectionState(false);
+            return false;
         }
     }
     useEffect(() => {
@@ -68,24 +72,33 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
     }, [isSelecting])
 
 
-    const copy = (text: string): void => {
-        refInput.current!.select();
-        document.execCommand('copy');
-        console.log('copy!!')//
-
-        // if (window.isSecureContext && navigator.clipboard) {
-        //     navigator.clipboard.writeText(text);
-        // } else {
-        //     refInput.current!.select();
-        //     document.execCommand('copy');
-        // }
+    const copyKeep = (): void => {
+        if (window.isSecureContext && navigator.clipboard) {
+            navigator.clipboard.writeText(keep);
+        } else {
+            refInput.current!.select();
+            getDocumentFromIframe().execCommand('copy');
+            refInput.current!.blur();
+        }
     }
-    const paste = async (setText: Function): Promise<string> => {
-        return navigator.clipboard.readText()
-            .then(text => {
-                setText(text)
-                return text;
-            })
+    const pasteKeep = async (): Promise<void> => {
+        let text = '';
+        if (window.isSecureContext && navigator.clipboard) {
+            text = await navigator.clipboard.readText();
+        } else {
+            const domDiv = document.createElement("div");
+            domDiv.setAttribute('style', 'position: fixed; opacity: 0;');
+            domDiv.contentEditable = 'true';
+            document.body.append(domDiv);
+
+            domDiv.focus();
+            document.execCommand('paste');
+
+            text = domDiv.innerText;
+            domDiv.remove();
+        }
+        setKeep(text);
+        store(text);
     }
 
 
@@ -117,21 +130,25 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
                     break;
 
                 case 'KeyC':
-                    copy(keep);
+                    copyKeep();
                     setCopyButtonClickState(true);
                     break;
                 
                 case 'KeyV':
-                    paste(setKeep)
-                        .then((keep: string) => store(keep));
+                    pasteKeep();
                     setPasteButtonClickState(true);
                     break;
             }
         }
     }
     useEffect(() => {
+        const windowIframe = getWindowFromIframe();
+        windowIframe.addEventListener('keydown', setShortcutKey);
         window.addEventListener('keydown', setShortcutKey);
-        return () => window.removeEventListener('keydown', setShortcutKey);
+        return () => {
+            windowIframe.removeEventListener('keydown', setShortcutKey);
+            window.removeEventListener('keydown', setShortcutKey);
+        }
     }, [keep, setKeep])
 
 
@@ -185,7 +202,7 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
                         className={isCopyButtonClicked? style.clicked : ''}
                         title='copy (alt + KeyC)'
 
-                        onClick={() => { copy(keep); setCopyButtonClickState(true); }}
+                        onClick={() => { copyKeep(); setCopyButtonClickState(true); }}
                     >
                         c
                     </button>
@@ -193,7 +210,7 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
                         className={isPasteButtonClicked? style.clicked : ''}
                         title='paste (alt + KeyV)'
 
-                        onClick={() => { paste(setKeep); setPasteButtonClickState(true); }}
+                        onClick={() => { pasteKeep(); setPasteButtonClickState(true); }}
                     >
                         v
                     </button>

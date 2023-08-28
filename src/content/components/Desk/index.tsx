@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 
-import { open, close } from '../..';
+import { displayIframe, hideIframe } from '../../tools/rootIframe';
 import Keep from '../Keep';
 import Units from '../Units';
 import style from './index.scss';
@@ -48,7 +48,7 @@ const Desk: FC = () => {
         }
     }
     useEffect(() => {
-        isDisplayed? open() : close();
+        isDisplayed? displayIframe() : hideIframe();
         window.addEventListener('keydown', setShortcutKey);
         return () => window.removeEventListener('keydown', setShortcutKey);
     }, [isDisplayed])
