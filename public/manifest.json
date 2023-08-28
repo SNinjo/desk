@@ -9,6 +9,7 @@
 	"permissions": [
 		"activeTab",
 		"storage",
+		"clipboardRead",
 		"webNavigation",
 		"http://*/",
 		"https://*/"
