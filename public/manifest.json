@@ -9,6 +9,7 @@
 	"permissions": [
 		"activeTab",
 		"clipboardRead",
+		"debugger",
 		"scripting",
 		"storage",
 		"webNavigation"
