@@ -1,8 +1,3 @@
-import injectionCode from './injectionCode.raw.js';
-
-
-
-
 function updateIcon(displayState) {
     if (displayState) {
         chrome.action.setIcon({
@@ -28,12 +23,11 @@ function setDisplayState(displayState) {
     });
 }
 
-function initDisplayState() {
+(function initDisplayState() {
     chrome.storage.local.get("displayState", (result) => {
         setDisplayState(result.displayState ?? true);
     });
-}
-initDisplayState();
+})();
 
 chrome.action.onClicked.addListener(() => {
     chrome.storage.local.get("displayState", (result) => {
@@ -52,13 +46,7 @@ chrome.runtime.onMessage.addListener((request) => {
 
 
 
-const mapCodesInEachTab = new Map();
-function injectConstant(name, value) {
-    return `const ${name} = \`${value.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`;`;
-}
-function injectMainCode(code) {
-    return `(async function (){ ${code} })()`;
-}
+const mapScriptInTab = new Map();
 
 (function initKeep() {
     chrome.storage.local.get("keep", (result) => {
@@ -83,25 +71,38 @@ chrome.runtime.onMessage.addListener((request, sender) => {
 
         case 'clear code':
             let tabId = sender.tab.id;
-            if (mapCodesInEachTab.has(tabId)) mapCodesInEachTab.delete(tabId);
+            if (mapScriptInTab.has(tabId)) mapScriptInTab.delete(tabId);
             break;
     }
 });
 chrome.webNavigation.onCompleted.addListener((details) => {
-    if ((details.frameId === 0) && (mapCodesInEachTab.has(details.tabId))) {
-        let { link, code } = mapCodesInEachTab.get(details.tabId);
+    if ((details.frameId === 0) && (mapScriptInTab.has(details.tabId))) {
+        let { link, script } = mapScriptInTab.get(details.tabId);
         chrome.storage.local.get("keep", (result) => {
-			const test = () => {
-				eval('console.log("test")');
-			}
-			console.log('run test')//
 			chrome.scripting.executeScript({
-				target: {  tabId: details.tabId  },
-				func: test,
+				target: {
+                    tabId: details.tabId,
+                },
+				func: (...globalVariables) => {
+                    globalVariables.forEach(globalVariable => {
+                        window[globalVariable[0]] = globalVariable[1];
+                    })
+                },
+                args: [
+                    ['keep', result.keep],
+                    ['link', link],
+                    ['script', script]
+                ],
 			})
-            // chrome.scripting.executeScript(details.tabId, {
-            //     code: `${injectionCode} \n${injectConstant('keep', result.keep)} \n${injectConstant('link', link)} \n${injectConstant('code', code)} \n${injectMainCode(code)}`
-            // });
+			chrome.scripting.executeScript({
+				target: {
+                    tabId: details.tabId,
+                },
+                files: [
+                    `injectionCode.js`,
+                    `/config/${script}`
+                ],
+			})
         });
     }
 });
@@ -112,7 +113,7 @@ chrome.webNavigation.onCompleted.addListener((details) => {
 chrome.runtime.onMessage.addListener((request) => {
     if (request.task === 'open website') {
         chrome.tabs.create({ url: request.link }, (tab) => {
-            mapCodesInEachTab.set(tab.id, { link: request.link, code: request.code });
+            mapScriptInTab.set(tab.id, { link: request.link, script: request.script });
         });
     }
 });

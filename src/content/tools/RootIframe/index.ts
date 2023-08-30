@@ -39,3 +39,16 @@ export function displayIframe() {
 export function hideIframe() {
     iframe.setAttribute('style', 'display: none');
 }
+
+export function addGlobalListener<T extends keyof WindowEventMap>(type: T, listener: (this: Window, ev: WindowEventMap[T]) => any) {
+    window.addEventListener(type, listener);
+
+    const windowIframe = getWindowFromIframe();
+    windowIframe.addEventListener(type, listener);
+}
+export function removeGlobalListener<T extends keyof WindowEventMap>(type: T, listener: (this: Window, ev: WindowEventMap[T]) => any) {
+    window.removeEventListener(type, listener);
+
+    const windowIframe = getWindowFromIframe();
+    windowIframe.removeEventListener(type, listener);
+}

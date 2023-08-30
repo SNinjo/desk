@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 
-import { getWindowFromIframe, getDocumentFromIframe } from '../../tools/rootIframe';
+import { getDocumentFromIframe, addGlobalListener, removeGlobalListener } from '../../tools/RootIframe';
 import style from './index.scss';
 import './index.css';
 
@@ -142,13 +142,8 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
         }
     }
     useEffect(() => {
-        const windowIframe = getWindowFromIframe();
-        windowIframe.addEventListener('keydown', setShortcutKey);
-        window.addEventListener('keydown', setShortcutKey);
-        return () => {
-            windowIframe.removeEventListener('keydown', setShortcutKey);
-            window.removeEventListener('keydown', setShortcutKey);
-        }
+        addGlobalListener('keydown', setShortcutKey);
+        return () => removeGlobalListener('keydown', setShortcutKey);
     }, [keep, setKeep])
 
 

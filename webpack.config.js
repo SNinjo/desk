@@ -114,10 +114,6 @@ const background = {
 	module: {
 		rules: [
 			{
-				test: /\.raw\.js/,
-				use: 'raw-loader',
-			},
-			{
 				test: /\.tsx?$/,
 				use: 'ts-loader',
 				exclude: /node_modules/,
@@ -131,6 +127,13 @@ const background = {
 		filename: 'background.bundle.js',
 		path: path.resolve(__dirname, 'build'),
 	},
+	plugins: [
+		new CopyWebpackPlugin({
+			patterns: [
+				{ from: "./src/background/injectionCode.js", to: "./injectionCode.js" },
+			],
+		}),
+	]
 };
 
 

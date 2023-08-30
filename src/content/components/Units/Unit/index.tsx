@@ -1,4 +1,6 @@
 import { FC, useEffect } from 'react';
+
+import { addGlobalListener, removeGlobalListener } from '../../../tools/RootIframe';
 import style from './index.scss';
 
 
@@ -12,15 +14,9 @@ export interface iUnit {
         shift: boolean,
     },
     link: string,
-    code: string,
+    script: string,
     linkUsingKeep: string,
-    codeUsingKeep: string,
-}
-async function fetchCode(link: string): Promise<string> {
-    if (link === '') return new Promise(resolve => resolve(''));
-    
-    return fetch(  chrome.runtime.getURL(`/config/${link}`)  )
-        .then(response => response.text())
+    scriptUsingKeep: string,
 }
 
 interface Key {
@@ -41,16 +37,16 @@ interface iProps {
 const Unit: FC<iProps> = ({ config, keep }) => {
     const sendTask = async () => {
         let link = config.link;
-        let code = await fetchCode(config.code);
+        let script = config.script;
         if (keep && config.linkUsingKeep){
             link = config.linkUsingKeep.replace(/<keep>/g, encodeURI(keep));
-            code = await fetchCode(config.codeUsingKeep);
+            script = config.scriptUsingKeep;
         }
     
         chrome.runtime.sendMessage({
             task: 'open website',
-            link: link,
-            code: code,
+            link,
+            script,
         });
     }
 
@@ -65,8 +61,8 @@ const Unit: FC<iProps> = ({ config, keep }) => {
         sendTask();
     }
     useEffect(() => {
-        window.addEventListener('keydown', setShortcutKey);
-        return () => window.removeEventListener('keydown', setShortcutKey);
+        addGlobalListener('keydown', setShortcutKey);
+        return () => removeGlobalListener('keydown', setShortcutKey);
     }, [keep])
 
 

@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 
-import { getAppFromIframe } from './tools/rootIframe';
+import { getAppFromIframe } from './tools/RootIframe';
 import App from './app';
 import './index.css';
 

@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 
-import { displayIframe, hideIframe } from '../../tools/rootIframe';
+import { addGlobalListener, displayIframe, hideIframe, removeGlobalListener } from '../../tools/RootIframe';
 import Keep from '../Keep';
 import Units from '../Units';
 import style from './index.scss';
@@ -34,14 +34,6 @@ const Desk: FC = () => {
     }, [])
 
     const setShortcutKey = (event: KeyboardEvent) => {
-        if (event.ctrlKey && (event.code === 'KeyE')){
-            event.preventDefault();
-            chrome.runtime.sendMessage({
-                task: 'open website',
-                link: 'https://www.google.com',
-                code: '',
-            });
-        }
         if (event.ctrlKey && event.altKey) {
             store(!isDisplayed);
             setDisplayState(!isDisplayed);
@@ -49,8 +41,8 @@ const Desk: FC = () => {
     }
     useEffect(() => {
         isDisplayed? displayIframe() : hideIframe();
-        window.addEventListener('keydown', setShortcutKey);
-        return () => window.removeEventListener('keydown', setShortcutKey);
+        addGlobalListener('keydown', setShortcutKey);
+        return () => removeGlobalListener('keydown', setShortcutKey);
     }, [isDisplayed])
 
 

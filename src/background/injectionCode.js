@@ -4,11 +4,11 @@ function done() {
     });
 }
 
-function open(link, code) {
+function open(link, script) {
     chrome.runtime.sendMessage({
         task: 'open website',
         link: link,
-        code: code,
+        script: script,
     });
 }
 
