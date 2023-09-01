@@ -11,7 +11,7 @@ function applyCSS(iframe: HTMLIFrameElement) {
     iframe.contentWindow!.document.head.appendChild(link);
 }
 function initialize() {
-    document.documentElement.prepend(iframe);
+    document.documentElement.append(iframe);
     iframe.setAttribute('id', 'desk');
     applyCSS(iframe);
 

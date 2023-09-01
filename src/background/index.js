@@ -108,8 +108,6 @@ chrome.webNavigation.onCompleted.addListener((details) => {
 });
 
 
-
-
 chrome.runtime.onMessage.addListener((request) => {
     if (request.task === 'open website') {
         chrome.tabs.create({ url: request.link }, (tab) => {
@@ -122,48 +120,34 @@ chrome.runtime.onMessage.addListener((request) => {
 
 
 chrome.runtime.onMessage.addListener((request, sender) => {
-    switch (request.task){
-        case 'insert text':
-			chrome.debugger.attach({ tabId: sender.tab.id }, "1.2", async () => {
-				await chrome.debugger.sendCommand({
-					tabId: sender.tab.id
-				}, 'Input.insertText', {
-					text: request.text,
-				});
-				
-				await chrome.debugger.detach({ tabId: sender.tab.id });
-			});
-            break;
-		
-		
-		case 'click':
-			chrome.debugger.attach({ tabId: sender.tab.id }, "1.2", async () => {
-				await chrome.debugger.sendCommand({ tabId: sender.tab.id }, "Input.dispatchMouseEvent", {
-					type:"mousePressed",
-					button: "left",
-					x: request.position.x,
-					y: request.position.y,
-				})
-				await chrome.debugger.sendCommand({ tabId: sender.tab.id }, "Input.dispatchKeyEvent", {
-					autoRepeat: false,
-					code: "ArrowDown",
-					isKeypad: false,
-					key: "ArrowDown",
-					location: 0,
-					modifiers: 0,
-					text: "",
-					type: "rawKeyDown",
-					unmodifiedText: "",
-					windowsVirtualKeyCode: 40
-				})
-				await chrome.debugger.sendCommand({ tabId: sender.tab.id }, "Input.dispatchMouseEvent", {
-					type:"mouseReleased",
-					button: "left",
-					x: request.position.x,
-					y: request.position.y,
-				})
-				
-				await chrome.debugger.detach({ tabId: sender.tab.id });
-			});
-    }
+    if (!request.task.startsWith('debugger: ')) return;
+    
+    chrome.debugger.attach({ tabId: sender.tab.id }, "1.2", async () => {
+        switch (request.task){
+            case 'debugger: insert text':
+                await chrome.debugger.sendCommand({
+                    tabId: sender.tab.id
+                }, 'Input.insertText', {
+                    text: request.text,
+                });
+                break;
+            
+            case 'debugger: press ArrowDown key':
+                await chrome.debugger.sendCommand({ tabId: sender.tab.id }, "Input.dispatchKeyEvent", {
+                    autoRepeat: false,
+                    code: "ArrowDown",
+                    isKeypad: false,
+                    key: "ArrowDown",
+                    location: 0,
+                    modifiers: 0,
+                    text: "",
+                    type: "rawKeyDown",
+                    unmodifiedText: "",
+                    windowsVirtualKeyCode: 40
+                })
+                break;
+        }
+        
+        await chrome.debugger.detach({ tabId: sender.tab.id });
+    });
 });

@@ -30,18 +30,20 @@ async function until(check, run) {
 function insertText(element, text) {
 	element.focus();
     chrome.runtime.sendMessage({
-        task: 'insert text',
+        task: 'debugger: insert text',
 		text,
     });
 }
-function click(element) {
-	const rect = element.getBoundingClientRect();
+async function selectOption(element, value) {
+    const arrValues = [...element.querySelectorAll('option')].map(option => option.value);
+    const indexTarget = arrValues.findIndex(valueOption => (valueOption == value));
+
+    element.value = '';
 	element.focus();
-    chrome.runtime.sendMessage({
-        task: 'click',
-		position: {
-			x: rect.x,
-			y: rect.y,
-		},
-    });
+    for (let index = -1; index < indexTarget; index++) {
+        chrome.runtime.sendMessage({
+            task: 'debugger: press ArrowDown key',
+            value,
+        });
+    }
 }
