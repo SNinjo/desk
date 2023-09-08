@@ -41,8 +41,10 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
         document.body.classList.remove('markHovering');
     }
     const clickElement: (event: Event) => any = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
+        if (document.querySelector('body.markHovering')) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
 
         const text = getText(event.target as HTMLElement);
         const parsedText = text.match(regexSelecting);
