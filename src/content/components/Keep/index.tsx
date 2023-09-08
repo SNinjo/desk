@@ -56,7 +56,7 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
         return false;
     }
     useEffect(() => {
-        window.addEventListener('mouseover', (event) => {
+        const hover = (event: MouseEvent) => {
             const lastHoveringElement = document.querySelector('.hovering');
             if (lastHoveringElement) {
                 lastHoveringElement.classList.remove('hovering');
@@ -66,8 +66,10 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
             const currentHoveringElement = event.target as HTMLElement;
             currentHoveringElement.classList.add('hovering');
             currentHoveringElement.addEventListener('click', clickElement);
-        })
-    }, [])
+        }
+        window.addEventListener('mouseover', hover);
+        return () => window.removeEventListener('mouseover', hover);
+    }, [regexSelecting])
     useEffect(() => {
         if (isSelecting) {
             showHoveringElement();
