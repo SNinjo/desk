@@ -41,10 +41,8 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
         document.body.classList.remove('markHovering');
     }
     const clickElement: (event: Event) => any = (event) => {
-        if (document.querySelector('body.markHovering')) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
+        event.preventDefault();
+        event.stopPropagation();
 
         const text = getText(event.target as HTMLElement);
         const parsedText = text.match(regexSelecting);
@@ -60,19 +58,22 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
             const lastHoveringElement = document.querySelector('.hovering');
             if (lastHoveringElement) {
                 lastHoveringElement.classList.remove('hovering');
-                lastHoveringElement.removeEventListener('click', clickElement);
             }
 
             const currentHoveringElement = event.target as HTMLElement;
             currentHoveringElement.classList.add('hovering');
-            currentHoveringElement.addEventListener('click', clickElement);
         }
+
         window.addEventListener('mouseover', hover);
-        return () => window.removeEventListener('mouseover', hover);
-    }, [regexSelecting])
+        return () => {
+            window.removeEventListener('mouseover', hover);
+        }
+    }, [])
     useEffect(() => {
         if (isSelecting) {
             showHoveringElement();
+            window.addEventListener('click', clickElement);
+            return () => window.removeEventListener('click', clickElement);
         } else {
             hideHoveringElement();
         }
