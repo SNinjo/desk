@@ -1,5 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 
+import { getText } from '../../tools/Element';
 import { getDocumentFromIframe, addGlobalListener, removeGlobalListener } from '../../tools/RootIframe';
 import style from './index.scss';
 import './index.css';
@@ -33,41 +34,43 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
     }, [])
 
     const [isSelecting, setSelectionState] = useState(false);
-    let elementSelected: HTMLElement | null = null;
-    const clearSelectedElement = () => {
-        if (elementSelected) {
-            elementSelected.classList.remove('selecting');
-            elementSelected = null;
-        }
+    const showHoveringElement = () => {
+        document.body.classList.add('markHovering');
     }
-    const hoverOnElement: (event: MouseEvent) => any = (event) => {
-        clearSelectedElement();
-        elementSelected = event.target as HTMLElement;
-        elementSelected.classList.add('selecting');
+    const hideHoveringElement = () => {
+        document.body.classList.remove('markHovering');
     }
-    const clickOnSelectedElement: (event: MouseEvent) => any = (event) => {
-        if (elementSelected) {
-            event.preventDefault();
-            event.stopPropagation();
+    const clickElement: (event: Event) => any = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
 
-            const parsedText = elementSelected.innerText.match(regexSelecting);
-            const keep = parsedText? parsedText[1] : elementSelected.innerText;
-            setKeep(keep);
-            store(keep);
+        const text = getText(event.target as HTMLElement);
+        const parsedText = text.match(regexSelecting);
+        const keep = parsedText? parsedText[1] : text;
+        setKeep(keep);
+        store(keep);
 
-            setSelectionState(false);
-            return false;
-        }
+        setSelectionState(false);
+        return false;
     }
     useEffect(() => {
+        window.addEventListener('mouseover', (event) => {
+            const lastHoveringElement = document.querySelector('.hovering');
+            if (lastHoveringElement) {
+                lastHoveringElement.classList.remove('hovering');
+                lastHoveringElement.removeEventListener('click', clickElement);
+            }
+
+            const currentHoveringElement = event.target as HTMLElement;
+            currentHoveringElement.classList.add('hovering');
+            currentHoveringElement.addEventListener('click', clickElement);
+        })
+    }, [])
+    useEffect(() => {
         if (isSelecting) {
-            document.body.addEventListener('mouseover', hoverOnElement);
-            document.body.addEventListener('click', clickOnSelectedElement);
-        }
-        return () => {
-            clearSelectedElement();
-            document.body.removeEventListener('mouseover', hoverOnElement);
-            document.body.removeEventListener('click', clickOnSelectedElement);
+            showHoveringElement();
+        } else {
+            hideHoveringElement();
         }
     }, [isSelecting])
 
