@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-undef */
 const path = require('path');
-const fs = require("fs");
+const fs = require('fs');
 
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const WebpackShellPluginNext = require("webpack-shell-plugin-next");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -18,7 +20,7 @@ const clearBuildDir = {
 			onBuildEnd: {
 				scripts: [
 					() => {
-						fs.unlinkSync("build/main.js");
+						fs.unlinkSync('build/main.js');
 					},
 				],
 			},
@@ -34,14 +36,14 @@ const public = {
 	plugins: [
 		new CopyWebpackPlugin({
 			patterns: [
-				{ from: "./public/", to: "./" },
+				{ from: './public/', to: './' },
 			],
 		}),
 		new WebpackShellPluginNext({
 			onBuildEnd: {
 				scripts: [
 					() => {
-						fs.unlinkSync("build/main.js");
+						fs.unlinkSync('build/main.js');
 					},
 				],
 			},
@@ -78,7 +80,7 @@ const content = {
 					{
 						loader: 'css-loader',
 						options: {
-								modules: { localIdentName: '[name]__[local]___[hash:base64:5]' },
+							modules: { localIdentName: '[name]__[local]___[hash:base64:5]' },
 						},
 					},
 					{
@@ -98,7 +100,7 @@ const content = {
 	optimization: {
 		minimizer: [
 			new TerserWebpackPlugin({
-					extractComments: false,
+				extractComments: false,
 			})
 		],
 	},
@@ -127,13 +129,27 @@ const background = {
 		filename: 'background.bundle.js',
 		path: path.resolve(__dirname, 'build'),
 	},
-	plugins: [
-		new CopyWebpackPlugin({
-			patterns: [
-				{ from: "./src/background/injectionCode.js", to: "./injectionCode.js" },
-			],
-		}),
-	]
+};
+
+const scriptMethod = {
+	entry: './src/scriptMethod/',
+	module: {
+		rules: [
+			{
+				test: /\.tsx?$/,
+				use: 'ts-loader',
+				exclude: /node_modules/,
+			},
+		],
+	},
+	resolve: {
+		extensions: ['.tsx', '.ts', '.js'],
+	},
+	output: {
+		filename: 'scriptMethod.bundle.js',
+		path: path.resolve(__dirname, 'build'),
+		library: 'SCRIPT',
+	},
 };
 
 
@@ -142,4 +158,5 @@ module.exports = [
 	public,
 	content,
 	background,
+	scriptMethod,
 ];
