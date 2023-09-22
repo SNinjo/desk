@@ -1,9 +1,8 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 
-import { getText } from '../../tools/Element';
+import { getText, Outward } from '../../tools/Element';
 import { getDocumentFromIframe, addGlobalListener, removeGlobalListener } from '../../tools/RootIframe';
 import style from './index.scss';
-import './index.css';
 
 
 function read(setKeep: (keep: string) => void): void {
@@ -34,11 +33,49 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 	}, [])
 
 	const [isSelecting, setSelectionState] = useState(false);
-	const showHoveringElement = () => {
-		document.body.classList.add('markHovering');
+
+	const [outwardHoveredElement, setOutwardOfHoveredElement] = useState(new Outward());
+	const borderWidthHoveredElementMarker = 2;
+	const selectorHoveredElementMarker = '#hoveredElementMarker';
+	const getHoveredElementMarker = () => {
+		return document.querySelector(selectorHoveredElementMarker);
 	}
-	const hideHoveringElement = () => {
-		document.body.classList.remove('markHovering');
+	const createHoveredElementMarker = () => {
+		const divElement = document.createElement('div');
+		divElement.setAttribute('id', selectorHoveredElementMarker.replace(/^#/, ''));
+		divElement.setAttribute('style', `
+			position: fixed;
+			z-index: 2147483646;
+
+			border: dashed ${borderWidthHoveredElementMarker}px #e57effb0;
+			background-color: #7ea7ffb0;
+
+			pointer-events: none;
+		`);
+		document.body.append(divElement);
+	}
+	useEffect(() => {
+		if (!getHoveredElementMarker()) {
+			createHoveredElementMarker();
+		}
+	}, [])
+	useEffect(() => {
+		if (!isSelecting) {
+			new Outward({
+				x: -(borderWidthHoveredElementMarker * 2),
+				y: -(borderWidthHoveredElementMarker * 2)}
+			).setToElement(getHoveredElementMarker() as HTMLDivElement);
+		}
+	}, [isSelecting])
+	useEffect(() => {
+		if (isSelecting) {
+			outwardHoveredElement.setToElement(getHoveredElementMarker() as HTMLDivElement);
+		}
+	}, [isSelecting, outwardHoveredElement])
+
+	const hoverElement = (event: MouseEvent) => {
+		const hoveredElement = event.target as HTMLElement;
+		setOutwardOfHoveredElement(new Outward(hoveredElement.getBoundingClientRect()));
 	}
 	const clickElement: (event: Event) => void = (event) => {
 		event.preventDefault();
@@ -54,28 +91,13 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 		return false;
 	}
 	useEffect(() => {
-		const hover = (event: MouseEvent) => {
-			const lastHoveringElement = document.querySelector('.hovering');
-			if (lastHoveringElement) {
-				lastHoveringElement.classList.remove('hovering');
-			}
-
-			const currentHoveringElement = event.target as HTMLElement;
-			currentHoveringElement.classList.add('hovering');
-		}
-
-		window.addEventListener('mouseover', hover);
-		return () => {
-			window.removeEventListener('mouseover', hover);
-		}
-	}, [])
-	useEffect(() => {
 		if (isSelecting) {
-			showHoveringElement();
+			window.addEventListener('mouseover', hoverElement);
 			window.addEventListener('click', clickElement);
-			return () => window.removeEventListener('click', clickElement);
-		} else {
-			hideHoveringElement();
+			return () => {
+				window.removeEventListener('mouseover', hoverElement);
+				window.removeEventListener('click', clickElement);
+			}
 		}
 	}, [isSelecting])
 

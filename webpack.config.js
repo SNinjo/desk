@@ -20,7 +20,9 @@ const clearBuildDir = {
 			onBuildEnd: {
 				scripts: [
 					() => {
-						fs.unlinkSync('build/main.js');
+						if (fs.existsSync('build/main.js')) {
+							fs.unlinkSync('build/main.js');
+						}
 					},
 				],
 			},
@@ -43,7 +45,9 @@ const public = {
 			onBuildEnd: {
 				scripts: [
 					() => {
-						fs.unlinkSync('build/main.js');
+						if (fs.existsSync('build/main.js')) {
+							fs.unlinkSync('build/main.js');
+						}
 					},
 				],
 			},
