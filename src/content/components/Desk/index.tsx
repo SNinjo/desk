@@ -6,16 +6,15 @@ import Units from '../Units';
 import style from './index.scss';
 
 
-function read(setDisplayState: (displayState: boolean) => void): void {
-	chrome.storage.local.get('displayState', (result) => {
-		setDisplayState(result.displayState ?? true);
+function read(setDisplayState: (isDisplaying: boolean) => void): void {
+	chrome.storage.local.get('isDisplaying', ({ isDisplaying }) => {
+		setDisplayState(isDisplaying ?? true);
 	});
 }
-function store(displayState: boolean): void {
-	chrome.storage.local.set({ 'displayState': displayState }, () => {
+function store(isDisplaying: boolean): void {
+	chrome.storage.local.set({ isDisplaying }, () => {
 		chrome.runtime.sendMessage({
 			task: 'update display state',
-			displayState: displayState,
 		});
 	});
 }
@@ -25,7 +24,7 @@ const Desk: FC = () => {
 	const [keep, setKeep] = useState('');
 
 
-	const [isDisplayed, setDisplayState] = useState(false);
+	const [isDisplaying, setDisplayState] = useState(false);
 	useEffect(() => {
 		read(setDisplayState);
 		chrome.runtime.onMessage.addListener((request) => {
@@ -35,15 +34,15 @@ const Desk: FC = () => {
 
 	const setShortcutKey = (event: KeyboardEvent) => {
 		if (event.ctrlKey && event.altKey) {
-			store(!isDisplayed);
-			setDisplayState(!isDisplayed);
+			store(!isDisplaying);
+			setDisplayState(!isDisplaying);
 		}
 	}
 	useEffect(() => {
-		isDisplayed? displayIframe() : hideIframe();
+		isDisplaying? displayIframe() : hideIframe();
 		addGlobalListener('keydown', setShortcutKey);
 		return () => removeGlobalListener('keydown', setShortcutKey);
-	}, [isDisplayed])
+	}, [isDisplaying])
 
 
 	const PreventingFlickeringContentUntilScssIsLoaded = (

@@ -1,58 +1,47 @@
-function updateIcon(displayState: boolean) {
-	if (displayState) {
-		chrome.action.setIcon({
-			path: 'icons/desk.png'
-		});
-	} else {
-		chrome.action.setIcon({
-			path: 'icons/desk_closed.png'
-		});
-	}
+function updateIcon(isDisplaying: boolean) {
+	chrome.action.setIcon({
+		path: `icons/desk${isDisplaying? '' : '_closed'}.png`,
+	});
 }
-function setDisplayState(displayState: boolean) {
-	chrome.storage.local.set({ displayState }, () => {
-		chrome.tabs.query({}, (tabs) => {
-			tabs.forEach(tab => {
-				chrome.tabs.sendMessage((tab.id as number), {
-					task: 'update display state'
-				});
+function sendUpdatingDisplayStateToEachTab() {
+	chrome.tabs.query({}, (tabs) => {
+		tabs.forEach(tab => {
+			chrome.tabs.sendMessage((tab.id as number), {
+				task: 'update display state'
 			});
 		});
-		updateIcon(displayState);
+	});
+}
+function getDisplayState(): Promise<boolean> {
+	return new Promise(resolve => {
+		chrome.storage.local.get('isDisplaying', ({ isDisplaying }) => {
+			resolve(isDisplaying ?? true);
+		});
+	})
+}
+function setDisplayState(isDisplaying: boolean) {
+	chrome.storage.local.set({ isDisplaying }, () => {
+		sendUpdatingDisplayStateToEachTab();
+		updateIcon(isDisplaying);
 	});
 }
 
-(function initDisplayState() {
-	chrome.storage.local.get('displayState', ({ displayState }) => {
-		setDisplayState(displayState ?? true);
-	});
-})();
-
-chrome.action.onClicked.addListener(() => {
-	chrome.storage.local.get('displayState', ({ displayState }) => {
-		setDisplayState(  !(displayState ?? true)  );
-	});
+chrome.action.onClicked.addListener(async () => {
+	const isDisplaying = await getDisplayState();
+	setDisplayState(!isDisplaying);
 });
 
-chrome.runtime.onMessage.addListener((request: {task: string}) => {
+chrome.runtime.onMessage.addListener(async (request: {task: string}) => {
 	if (request.task === 'update display state') {
-		chrome.storage.local.get('displayState', ({ displayState }) => {
-			setDisplayState(displayState);
-		});
+		const isDisplaying = await getDisplayState();
+		setDisplayState(isDisplaying);
 	}
 });
 
 
 
 
-const mapScriptInTab = new Map<number, {link: string, script: string}>();
-
-(function initKeep() {
-	chrome.storage.local.get('keep', ({ keep }) => {
-		chrome.storage.local.set({ 'keep': keep ?? '' });
-	});
-})();
-function updateKeepInEachTab() {
+function sendUpdatingKeepToEachTab() {
 	chrome.tabs.query({}, (tabs) => {
 		tabs.forEach(tab => {
 			chrome.tabs.sendMessage((tab.id as number), {
@@ -61,63 +50,144 @@ function updateKeepInEachTab() {
 		});
 	});
 }
+async function getKeep(): Promise<string> {
+	return new Promise(resolve => {
+		chrome.storage.local.get('keep', ({ keep }) => {
+			resolve(keep ?? '');
+		});
+	})
+}
+
+
+type Script = {
+	link: string,
+	path: string,
+}
+function toArray<KEY, VALUE>(map: Map<KEY, VALUE>): Array<[KEY, VALUE]> {
+	const array: Array<[KEY, VALUE]> = [];
+	map.forEach((value, key) => array.push([key, value]))
+	return array;
+}
+
+async function getScriptsInTab(): Promise<Map<number, Script>> {
+	return new Promise(resolve => {
+		chrome.storage.local.get('scriptsInTab', ({ scriptsInTab }) => resolve(new Map(scriptsInTab)));
+	});
+}
+async function setScriptsInTab(scriptsInTab: Map<number, Script>): Promise<void> {
+	return new Promise(resolve => {
+		chrome.storage.local.set({ scriptsInTab: toArray(scriptsInTab) }, resolve);
+	});
+}
+
+async function addScript(tabId: number, script: Script): Promise<void> {
+	const scriptsInTab = await getScriptsInTab();
+	scriptsInTab.set(tabId, script);
+	await setScriptsInTab(scriptsInTab);
+}
+async function getScript(tabId: number): Promise<Script | null> {
+	const scriptsInTab = await getScriptsInTab();
+	return scriptsInTab.get(tabId) ?? null;
+}
+async function removeScript(tabId: number): Promise<void> {
+	const scriptsInTab = await getScriptsInTab();
+	scriptsInTab.delete(tabId);
+	await setScriptsInTab(scriptsInTab);
+}
+
 
 chrome.runtime.onMessage.addListener((request: {task: string}, sender) => {
 	switch (request.task) {
 	case 'update keep':
-		updateKeepInEachTab();
+		sendUpdatingKeepToEachTab();
 		break;
 
 	case 'clear code':
 		let tabId = sender.tab!.id!;
-		if (mapScriptInTab.has(tabId)) mapScriptInTab.delete(tabId);
+		removeScript(tabId);
 		break;
 	}
 });
-chrome.webNavigation.onCompleted.addListener((details) => {
-	if ((details.frameId === 0) && (mapScriptInTab.has(details.tabId))) {
-		let { link, script } = mapScriptInTab.get(details.tabId)!;
-		chrome.storage.local.get('keep', ({ keep }) => {
-			chrome.scripting.executeScript({
-				target: {
-					tabId: details.tabId,
-				},
-				func: (...globalVariables: Array<[string, string]>) => {
-					globalVariables.forEach(globalVariable => {
-						(window[globalVariable[0] as keyof typeof window] as unknown) = globalVariable[1];
-					})
-				},
-				args: [
-					['keep', (keep as string)],
-					['link', link],
-					['script', script]
-				],
-			});
-			chrome.scripting.executeScript({
-				target: {
-					tabId: details.tabId,
-				},
-				files: [
-					'scriptMethod.bundle.js',
-					`/config/${script}`
-				],
-			});
+
+async function executeScriptWhenWebsiteLoaded(tabId: number, frameId: number) {
+	const script = await getScript(tabId);
+	if (script && script.path && (frameId === 0)) {
+		const keep = await getKeep();
+		chrome.scripting.executeScript({
+			target: {
+				tabId,
+			},
+			func: (...globalVariables: Array<[string, string | number]>) => {
+				globalVariables.forEach(globalVariable => {
+					(window[globalVariable[0] as keyof typeof window] as unknown) = globalVariable[1];
+				})
+			},
+			args: [
+				['keep', keep],
+				['link', script.link],
+				['script', script.path],
+				['tabId', tabId],
+			],
+		});
+		chrome.scripting.executeScript({
+			target: {
+				tabId,
+			},
+			files: [
+				'scriptMethod.bundle.js',
+				`/config/${script.path}`
+			],
 		});
 	}
-});
+}
+chrome.webNavigation.onCompleted.addListener((details) => executeScriptWhenWebsiteLoaded(details.tabId, details.frameId));
 
 
-chrome.runtime.onMessage.addListener((request: {task: string, link: string, script?: string}) => {
+chrome.runtime.onMessage.addListener((request: {task: string, link: string, isTabActive?: boolean, script?: string}) => {
 	if (request.task === 'open website') {
-		chrome.tabs.create({ url: request.link }, (tab) => {
-			if (request.script) {
-				mapScriptInTab.set((tab.id as number), { link: request.link, script: request.script });
+		chrome.tabs.create(
+			{
+				url: request.link,
+				active: (request.isTabActive ?? true),
+			},
+			(tab) => {
+				if (request.script) {
+					addScript((tab.id as number), {
+						link: request.link,
+						path: request.script ?? '',
+					});
+				}
 			}
-		});
+		);
 	}
 });
 
 
+
+
+async function getActivatedTabId(): Promise<number> {
+	return new Promise(resolve => {
+		chrome.tabs.query({active: true}, (tabs) => {
+			resolve(tabs[0].id!)
+		})
+	})
+}
+
+chrome.runtime.onMessage.addListener(async (request: {task: string}, sender) => {
+	if (request.task === 'is this tab activated') {
+		const tabId = sender.tab!.id!;
+		chrome.tabs.sendMessage(sender.tab!.id!, {
+			task: `receive this tab state`,
+			isThisTabActivated: (tabId === await getActivatedTabId()),
+		});
+	}
+});
+chrome.tabs.onActivated.addListener((activeInfo) => {
+	chrome.tabs.sendMessage(activeInfo.tabId, {
+		task: `activate tab`,
+		tabId: activeInfo.tabId,
+	});
+});
 
 
 chrome.runtime.onMessage.addListener(async (request: {task: string, url: string, parameter: RequestInit & {type: string}}, sender) => {

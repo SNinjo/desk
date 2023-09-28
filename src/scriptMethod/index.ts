@@ -7,11 +7,45 @@ export function done() {
 	});
 }
 
-export function open(link: string, script: string) {
+export function open(link: string, isTabActive?: boolean, script?: string) {
 	chrome.runtime.sendMessage({
 		task: 'open website',
-		link: link,
-		script: script,
+		link,
+		isTabActive,
+		script,
+	});
+}
+
+export async function isThisTabActivated(): Promise<boolean> {
+	return new Promise(resolve => {
+		chrome.runtime.sendMessage({
+			task: `is this tab activated`,
+		});
+
+		const receiveMessage = (request: {task: string, isThisTabActivated: boolean}) => {
+			if (request.task === `receive this tab state`) {
+				chrome.runtime.onMessage.removeListener(receiveMessage);
+				resolve(request.isThisTabActivated);
+			}
+		}
+		chrome.runtime.onMessage.addListener(receiveMessage);
+	});
+}
+export async function onThisTabActivated(onTriggered: () => Promise<unknown>): Promise<void> {
+	return new Promise(async resolve => {
+		if (await isThisTabActivated()) {
+			await onTriggered();
+			resolve();
+		} else {
+			const receiveMessage = async (request: { task: string, tabId: number }) => {
+				if ((request.task === 'activate tab') && (request.tabId === window.tabId)) {
+					chrome.runtime.onMessage.removeListener(receiveMessage);
+					await onTriggered();
+					resolve();
+				}
+			}
+			chrome.runtime.onMessage.addListener(receiveMessage);
+		}
 	});
 }
 
@@ -26,13 +60,13 @@ export function fetchInBackground(url: string, parameter: RequestParameter) {
 			parameter,
 		});
 
-		const receiveData = (request: {task: string, data: string | JSON}) => {
+		const receiveMessage = (request: {task: string, data: string | JSON}) => {
 			if (request.task === `receive ${parameter.type}`) {
-				chrome.runtime.onMessage.removeListener(receiveData);
+				chrome.runtime.onMessage.removeListener(receiveMessage);
 				resolve(request.data);
 			}
 		}
-		chrome.runtime.onMessage.addListener(receiveData);
+		chrome.runtime.onMessage.addListener(receiveMessage);
 	});
 }
 
@@ -58,7 +92,6 @@ export async function selectOption(element: HTMLSelectElement, value: string) {
 	for (let index = -1; index < indexTarget; index++) {
 		chrome.runtime.sendMessage({
 			task: 'debugger: press ArrowDown key',
-			value,
 		});
 	}
 }

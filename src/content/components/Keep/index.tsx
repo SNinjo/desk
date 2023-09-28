@@ -7,7 +7,7 @@ import style from './index.scss';
 
 function read(setKeep: (keep: string) => void): void {
 	chrome.storage.local.get('keep', (result) => {
-		setKeep(result.keep);
+		setKeep(result.keep ?? '');
 	});
 }
 function store(keep: string): void {
@@ -18,6 +18,11 @@ function store(keep: string): void {
 		});
 	});
 }
+
+// function disableEvent(event: MouseEvent) {
+// 	event.preventDefault();
+// 	event.stopPropagation();
+// }
 
 
 interface iProps {
@@ -30,12 +35,16 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 		fetch(  chrome.runtime.getURL('/config/index.json')  )
 			.then(response => response.json())
 			.then(config => setRegexSelecting(new RegExp(config.regexKeepSelectingFromElement)))
-	}, [])
+	}, []);
+
 
 	const [isSelecting, setSelectionState] = useState(false);
 
-	const [outwardHoveredElement, setOutwardOfHoveredElement] = useState(new Outward());
 	const borderWidthHoveredElementMarker = 2;
+	const [outwardHoveredElement, setOutwardOfHoveredElement] = useState(new Outward({
+		x: -(borderWidthHoveredElementMarker * 2),
+		y: -(borderWidthHoveredElementMarker * 2)
+	}));
 	const selectorHoveredElementMarker = '#hoveredElementMarker';
 	const getHoveredElementMarker = () => {
 		return document.querySelector(selectorHoveredElementMarker);
@@ -63,9 +72,41 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 		if (!isSelecting) {
 			new Outward({
 				x: -(borderWidthHoveredElementMarker * 2),
-				y: -(borderWidthHoveredElementMarker * 2)}
-			).setToElement(getHoveredElementMarker() as HTMLDivElement);
+				y: -(borderWidthHoveredElementMarker * 2)
+			}).setToElement(getHoveredElementMarker() as HTMLDivElement);
 		}
+
+
+		// 這樣設會使自己也收不到 click 的事件, 且須處理一開始就 hover 的問題
+		// const classNameDisabledMouseEvent = 'disableMouseEvent';
+		// const enableMouseEventForElements = () => {
+		// 	document.querySelectorAll(`.${classNameDisabledMouseEvent}`).forEach(element => {
+		// 		element.classList.remove(classNameDisabledMouseEvent);
+		// 		(element as HTMLElement).removeEventListener('click', disableEvent);
+		// 		(element as HTMLElement).removeEventListener('mousedown', disableEvent);
+		// 		(element as HTMLElement).removeEventListener('mouseup', disableEvent);
+		// 	});
+		// }
+		// const disableMouseEventForElement = (element: HTMLElement) => {
+		// 	element.classList.add(classNameDisabledMouseEvent);
+		// 	element.addEventListener('click', disableEvent);
+		// 	element.addEventListener('mousedown', disableEvent);
+		// 	element.addEventListener('mouseup', disableEvent);
+		// }
+		const hoverElement = (event: MouseEvent) => {
+			const hoveredElement = event.target as HTMLElement;
+			setOutwardOfHoveredElement(new Outward(hoveredElement.getBoundingClientRect()));
+
+			// if (isSelecting) {
+			// 	disableMouseEventForElement(hoveredElement);
+			// }
+		}
+
+		// if (!isSelecting) {
+		// 	enableMouseEventForElements();
+		// }
+		window.addEventListener('mouseover', hoverElement);
+		return () => window.removeEventListener('mouseover', hoverElement);
 	}, [isSelecting])
 	useEffect(() => {
 		if (isSelecting) {
@@ -73,10 +114,6 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 		}
 	}, [isSelecting, outwardHoveredElement])
 
-	const hoverElement = (event: MouseEvent) => {
-		const hoveredElement = event.target as HTMLElement;
-		setOutwardOfHoveredElement(new Outward(hoveredElement.getBoundingClientRect()));
-	}
 	const clickElement: (event: Event) => void = (event) => {
 		event.preventDefault();
 		event.stopPropagation();
@@ -86,20 +123,19 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 		const keep = parsedText? parsedText[1] : text;
 		setKeep(keep);
 		store(keep);
+		console.log(`select | text: "${text}", regexSelecting: ${regexSelecting}, keep: "${keep}"`)//
 
 		setSelectionState(false);
 		return false;
 	}
 	useEffect(() => {
 		if (isSelecting) {
-			window.addEventListener('mouseover', hoverElement);
 			window.addEventListener('click', clickElement);
-			return () => {
-				window.removeEventListener('mouseover', hoverElement);
-				window.removeEventListener('click', clickElement);
-			}
+			return () => window.removeEventListener('click', clickElement);
 		}
 	}, [isSelecting])
+
+
 
 
 	const copyKeep = (): void => {

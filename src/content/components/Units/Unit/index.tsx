@@ -35,7 +35,7 @@ interface iProps {
     keep: string,
 }
 const Unit: FC<iProps> = ({ config, keep }) => {
-	const sendTask = async () => {
+	const openWebsite = async (isTabActive = true) => {
 		let link = config.link;
 		let script = config.script;
 		if (keep && config.linkUsingKeep) {
@@ -46,6 +46,7 @@ const Unit: FC<iProps> = ({ config, keep }) => {
 		chrome.runtime.sendMessage({
 			task: 'open website',
 			link,
+			isTabActive,
 			script,
 		});
 	}
@@ -58,7 +59,7 @@ const Unit: FC<iProps> = ({ config, keep }) => {
 		if (config.key.shift && !event.shiftKey) return;
 
 		event.preventDefault();
-		sendTask();
+		openWebsite();
 	}
 	useEffect(() => {
 		addGlobalListener('keydown', setShortcutKey);
@@ -69,7 +70,18 @@ const Unit: FC<iProps> = ({ config, keep }) => {
 	return (
 		<div
 			className={style.div}
-			onClick={() => sendTask()}
+
+			onMouseDown={(event) => {
+				switch (event.button) {
+				case 0:
+					openWebsite(!event.ctrlKey);
+					break;
+
+				case 1:
+					openWebsite(false);
+					break;
+				}
+			}}
 		>
 			<img
 				title={`${config.name} (${toString(config.key)})`}
