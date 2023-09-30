@@ -89,22 +89,28 @@ async function getScript(tabId: number): Promise<Script | null> {
 	const scriptsInTab = await getScriptsInTab();
 	return scriptsInTab.get(tabId) ?? null;
 }
-async function removeScript(tabId: number): Promise<void> {
+async function removeScript(tabId: number): Promise<Script | null> {
+	const removedScript = await getScript(tabId);
+
 	const scriptsInTab = await getScriptsInTab();
 	scriptsInTab.delete(tabId);
 	await setScriptsInTab(scriptsInTab);
+
+	return removedScript;
 }
 
 
-chrome.runtime.onMessage.addListener((request: {task: string}, sender) => {
+chrome.runtime.onMessage.addListener(async (request: {task: string}, sender) => {
 	switch (request.task) {
 	case 'update keep':
 		sendUpdatingKeepToEachTab();
 		break;
 
 	case 'clear code':
-		let tabId = sender.tab!.id!;
-		removeScript(tabId);
+		const tabId = sender.tab!.id!;
+		const script = await removeScript(tabId);
+		// eslint-disable-next-line no-console
+		console.log(`[Desk][${tabId}] End script | path: "${script?.path ?? ''}"`);
 		break;
 	}
 });
@@ -113,6 +119,8 @@ async function executeScriptWhenWebsiteLoaded(tabId: number, frameId: number) {
 	const script = await getScript(tabId);
 	if (script && script.path && (frameId === 0)) {
 		const keep = await getKeep();
+		// eslint-disable-next-line no-console
+		console.log(`[Desk][${tabId}] Execute script | path: "${script.path}"`);
 		chrome.scripting.executeScript({
 			target: {
 				tabId,
@@ -137,7 +145,7 @@ async function executeScriptWhenWebsiteLoaded(tabId: number, frameId: number) {
 				'scriptMethod.bundle.js',
 				`/config/${script.path}`
 			],
-		});
+		})
 	}
 }
 chrome.webNavigation.onCompleted.addListener((details) => executeScriptWhenWebsiteLoaded(details.tabId, details.frameId));
