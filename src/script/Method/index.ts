@@ -4,6 +4,7 @@ export * from 'regular-listener';
 export function done() {
 	chrome.runtime.sendMessage({
 		task: 'clear code',
+		url: window.location.href,
 	});
 }
 
@@ -13,6 +14,14 @@ export function open(link: string, isTabActive?: boolean, script?: string) {
 		link,
 		isTabActive,
 		script,
+	});
+}
+
+export function log(level: 'info' | 'warn' | 'error', message: string) {
+	chrome.runtime.sendMessage({
+		task: 'log',
+		level,
+		message,
 	});
 }
 
@@ -55,13 +64,13 @@ interface RequestParameter extends RequestInit {
 export function fetchInBackground(url: string, parameter: RequestParameter) {
 	return new Promise(resolve => {
 		chrome.runtime.sendMessage({
-			task: `fetch: ${parameter.type}`,
+			task: `fetch in background`,
 			url,
 			parameter,
 		});
 
 		const receiveMessage = (request: {task: string, data: string | JSON}) => {
-			if (request.task === `receive ${parameter.type}`) {
+			if (request.task === `receive ${parameter.type} from background`) {
 				chrome.runtime.onMessage.removeListener(receiveMessage);
 				resolve(request.data);
 			}
@@ -71,7 +80,7 @@ export function fetchInBackground(url: string, parameter: RequestParameter) {
 }
 
 
-export function sleep(ms: number) {
+export function sleep(ms: number): Promise<NodeJS.Timeout> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 

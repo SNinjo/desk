@@ -135,8 +135,8 @@ const background = {
 	},
 };
 
-const scriptMethod = {
-	entry: './src/scriptMethod/',
+const script = {
+	entry: './src/script/',
 	module: {
 		rules: [
 			{
@@ -150,7 +150,7 @@ const scriptMethod = {
 		extensions: ['.tsx', '.ts', '.js'],
 	},
 	output: {
-		filename: 'scriptMethod.bundle.js',
+		filename: 'script.bundle.js',
 		path: path.resolve(__dirname, 'build'),
 		library: 'SCRIPT',
 	},
@@ -162,5 +162,5 @@ module.exports = [
 	public,
 	content,
 	background,
-	scriptMethod,
+	script,
 ];

@@ -1,3 +1,8 @@
+import { log, LogLevel } from './tools/Log';
+
+
+
+
 function updateIcon(isDisplaying: boolean) {
 	chrome.action.setIcon({
 		path: `icons/desk${isDisplaying? '' : '_closed'}.png`,
@@ -100,7 +105,7 @@ async function removeScript(tabId: number): Promise<Script | null> {
 }
 
 
-chrome.runtime.onMessage.addListener(async (request: {task: string}, sender) => {
+chrome.runtime.onMessage.addListener(async (request: {task: string, url?: string}, sender) => {
 	switch (request.task) {
 	case 'update keep':
 		sendUpdatingKeepToEachTab();
@@ -109,46 +114,64 @@ chrome.runtime.onMessage.addListener(async (request: {task: string}, sender) => 
 	case 'clear code':
 		const tabId = sender.tab!.id!;
 		const script = await removeScript(tabId);
-		// eslint-disable-next-line no-console
-		console.log(`[Desk][${tabId}] End script | path: "${script?.path ?? ''}"`);
+		log('info', tabId, `End script | path: "${script?.path ?? ''}", url: "${request.url}"`);
 		break;
 	}
 });
 
-async function executeScriptWhenWebsiteLoaded(tabId: number, frameId: number) {
+async function executeScriptWhenWebsiteLoaded(tabId: number, frameId: number, url: string) {
 	const script = await getScript(tabId);
 	if (script && script.path && (frameId === 0)) {
 		const keep = await getKeep();
-		// eslint-disable-next-line no-console
-		console.log(`[Desk][${tabId}] Execute script | path: "${script.path}"`);
+		log('info', tabId, `Execute script | path: "${script.path}", url: "${url}"`);
+
+
+		const globalVariables: Array<[string, string | number]> = [
+			['keep', keep],
+			['link', script.link],
+			['script', script.path],
+			['tabId', tabId],
+		];
 		chrome.scripting.executeScript({
 			target: {
 				tabId,
 			},
-			func: (...globalVariables: Array<[string, string | number]>) => {
+			func: (...globalVariables: Array<[string, string | number]>): string => {
 				globalVariables.forEach(globalVariable => {
 					(window[globalVariable[0] as keyof typeof window] as unknown) = globalVariable[1];
 				})
+				return 'done';
 			},
-			args: [
-				['keep', keep],
-				['link', script.link],
-				['script', script.path],
-				['tabId', tabId],
-			],
-		});
+			args: globalVariables,
+		})
+			.then((results) => {
+				if (results[0].result === 'done') {
+					log('info', tabId, `Set global variables successfully\n${
+						globalVariables
+							.map(variable => {
+								if (typeof variable[1] === 'string') variable[1] = `"${variable[1]}"`;
+								return `\t${variable.join(' = ')}`;
+							})
+							.join(',\n')
+					}`);
+				} else {
+					log('warn', tabId, `Failed to set global variables`);
+				}
+			})
+
+
 		chrome.scripting.executeScript({
 			target: {
 				tabId,
 			},
 			files: [
-				'scriptMethod.bundle.js',
+				'script.bundle.js',
 				`/config/${script.path}`
 			],
-		})
+		});
 	}
 }
-chrome.webNavigation.onCompleted.addListener((details) => executeScriptWhenWebsiteLoaded(details.tabId, details.frameId));
+chrome.webNavigation.onCompleted.addListener((details) => executeScriptWhenWebsiteLoaded(details.tabId, details.frameId, details.url));
 
 
 chrome.runtime.onMessage.addListener((request: {task: string, link: string, isTabActive?: boolean, script?: string}) => {
@@ -171,6 +194,14 @@ chrome.runtime.onMessage.addListener((request: {task: string, link: string, isTa
 });
 
 
+
+
+chrome.runtime.onMessage.addListener(async (request: {task: string, level: LogLevel, message: string}, sender) => {
+	if (request.task === 'log') {
+		const tabId = sender.tab!.id!;
+		log(request.level, tabId, request.message);
+	}
+});
 
 
 async function getActivatedTabId(): Promise<number> {
@@ -199,23 +230,22 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 
 chrome.runtime.onMessage.addListener(async (request: {task: string, url: string, parameter: RequestInit & {type: string}}, sender) => {
-	if (!request.task.startsWith('fetch: ')) return;
+	if (!request.task.startsWith('fetch in background')) return;
 
-	const data = (
-		await fetch(request.url, request.parameter)
-			.then(async response => {
-				switch (request.parameter.type) {
-				case 'json':
-					return response.json();
-                    
-				default:
-					return response.text();
-				}
-			})
-	);
 	chrome.tabs.sendMessage(sender.tab!.id!, {
-		task: `receive ${request.parameter.type}`,
-		data,
+		task: `receive ${request.parameter.type} from background`,
+		data: (
+			await fetch(request.url, request.parameter)
+				.then(async response => {
+					switch (request.parameter.type) {
+					case 'json':
+						return response.json();
+						
+					default:
+						return response.text();
+					}
+				})
+		),
 	});
 });
 

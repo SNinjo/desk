@@ -6,6 +6,7 @@ import style from './index.scss';
 
 export interface iUnit {
     name: string,
+	description: string,
     icon: string,
     key: {
         code: string,
@@ -70,6 +71,7 @@ const Unit: FC<iProps> = ({ config, keep }) => {
 	return (
 		<div
 			className={style.div}
+			title={`${config.description}\n[${toString(config.key)}]`}
 
 			onMouseDown={(event) => {
 				switch (event.button) {
@@ -84,7 +86,6 @@ const Unit: FC<iProps> = ({ config, keep }) => {
 			}}
 		>
 			<img
-				title={`${config.name} (${toString(config.key)})`}
 				alt={toString(config.key)}
 				src={chrome.runtime.getURL(`/config/${config.icon}`)}
 			/>
