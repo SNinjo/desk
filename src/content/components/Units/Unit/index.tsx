@@ -27,7 +27,7 @@ interface Key {
     shift: boolean,
 }
 function toString(key: Key): string {
-	return `${(key.ctrl)? `ctrl + ` : ''}${(key.shift)? `shirt + ` : ''}${(key.alt)? `alt + ` : ''}${key.code}`
+	return `${(key.ctrl)? `Ctrl + ` : ''}${(key.shift)? `Shirt + ` : ''}${(key.alt)? `Alt + ` : ''}${key.code}`
 }
 
 
@@ -60,7 +60,7 @@ const Unit: FC<iProps> = ({ config, keep }) => {
 		if (config.key.shift && !event.shiftKey) return;
 
 		event.preventDefault();
-		openWebsite();
+		openWebsite(!config.key.ctrl && !event.ctrlKey);
 	}
 	useEffect(() => {
 		addGlobalListener('keydown', setShortcutKey);
