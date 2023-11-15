@@ -34,7 +34,7 @@ const Keep: FC<iProps> = ({ keep, setKeep }) => {
 	useEffect(() => {
 		fetch(  chrome.runtime.getURL('/config/index.json')  )
 			.then(response => response.json())
-			.then(config => setRegexSelecting(new RegExp(config.regexKeepSelectingFromElement)))
+			.then(config => setRegexSelecting(new RegExp(`(${config.regexKeepSelectingFromElement})`)))
 	}, []);
 
 
