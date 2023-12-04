@@ -76,7 +76,7 @@ const Unit: FC<iProps> = ({ config, keep }) => {
 			onMouseDown={(event) => {
 				switch (event.button) {
 				case 0:
-					openWebsite(!event.ctrlKey);
+					openWebsite(!event.ctrlKey && !event.altKey);
 					break;
 
 				case 1:
